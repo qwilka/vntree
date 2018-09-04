@@ -1,3 +1,4 @@
+import collections
 import copy
 import itertools
 import logging
@@ -5,14 +6,21 @@ import pathlib
 
 logger = logging.getLogger(__name__)
 
+
 class Node:
     """Node class for tree data structure.  
     """
-    def __init__(self, name=None, parent=None, data=None, nodedict=None):
+    def __init__(self, name=None, parent=None, data=None, treedict=None):
+        if data and isinstance(data, dict):
+            self.data = collections.defaultdict(dict, data) # copy.deepcopy(data)
+        else:
+            self.data = {}
         if name and isinstance(name, str):
             self.name = name
+        elif "name" in self.data:
+            self.name = self.data["name"]
         else:
-            self.name = "Node name not set."
+            self.name = ""
         self.childs = []
         if parent and isinstance(parent, Node):
             parent.add_child(self)
@@ -20,8 +28,11 @@ class Node:
             self.parent = parent
         else:
             raise TypeError("Node instance «{}» argument «parent» type not valid: {}".format(name, type(parent)))
-        if nodedict and isinstance(nodedict, dict):
-            self.from_dict(nodedict, parent)
+        if treedict and isinstance(treedict, dict):
+            self.from_treedict(treedict, parent)
+        if not self.name:
+            raise ValueError("{}: «name» argument not correctly specified; {}".format(self.__class__, self.data))
+
 
     def __str__(self):
         _level = len(self.get_ancestors())
@@ -42,19 +53,29 @@ class Node:
         newnode.parent = self
         return True    
 
+    def remove_child(self, node):
+        self.childs.remove(node)
+        return True
+
     @property
-    def path(self):
-        # NOTE returns node path in form "root/child/grandchild"
+    def _path(self):
+        # NOTE returns node path in form "/root/child/grandchild"
         _path = pathlib.PurePosixPath(self.name)
         _node = self
         while _node.parent:
             _path = _node.parent.name / _path
             _node = _node.parent
+        _path = pathlib.posixpath.sep / _path
         return _path.as_posix()
+
+    @property
+    def _coords(self):
+        pass
 
     def get_data(self, *keys):
         if not keys:
-            return copy.deepcopy(self.data)
+            #return copy.deepcopy(self.data)
+            _val = self.data
         _datadict = self.data
         for _key in keys:
             _val = _datadict.get(_key, None)
@@ -62,12 +83,14 @@ class Node:
                 _datadict = _val
             else:
                 break
+        if isinstance(_val, dict):
+            _val = copy.deepcopy(_val)
         return _val
 
     def set_data(self, *keys, value):
         # Note that «value» is a keyword-only argument
         _datadict = self.data
-        for ii, _key in enumerate(_keys):
+        for ii, _key in enumerate(keys):
             if ii==len(keys)-1:
                 _datadict[_key] = value
             else:
@@ -88,14 +111,14 @@ class Node:
     def get_child_by_name(self, childname):
         _childs = [_child for _child in self.childs if _child.name==childname]
         if len(_childs)>1:
-            logger.warning("VnNode.get_child_by_name: node:«%s» has more than 1 childnode with name=«%s»." % (self.name, childname))
+            logger.warning("%s.get_child_by_name: node:«%s» has more than 1 childnode with name=«%s»." % (self.__class__.__name__, self.name, childname))
         if len(_childs)==0:
             _childnode = None
         else:
             _childnode = _childs[0] # return first node found with name childname
         return _childnode
 
-    def get_node(self, path=None):
+    def get_nodepath(self, path=None):
         # get decendent node from path (NOTE: path is relative to self)
         _node = self
         if path is None or path=="." or path=="./" or path=="":
@@ -112,6 +135,14 @@ class Node:
                     break
         return _node
 
+    def find_one_node(self, *keys, value):
+        # Note that «value» is a keyword-only argument
+        for _node in self:
+            _val = _node.get_data(*keys)
+            if _val == value:
+                return _node
+        return None
+
     def to_texttree(self):
         treetext = ""
         local_root_level = len(self.get_ancestors())
@@ -120,25 +151,29 @@ class Node:
             treetext += ("." + " "*3)*level + "|---{}\n".format(node.name)
         return treetext
 
-    def from_dict(self, nodedict, parent=None):
-        self.name = "name not set"  # default values for name and data, should be over-written
-        self.data = {}
-        for key, val in nodedict.items():
-            if key in ["parent", "childs"]:
+    def from_treedict(self, treedict, parent=None):
+        if "data" in treedict:
+            self.data = collections.defaultdict(dict, treedict["data"])
+        #self.name = "name not set"  # default values for name and data, should be over-written
+        #self.data = {}
+        for key, val in treedict.items():
+            if key in ["parent", "childs", "data"]:
                 continue
             setattr(self, key, val)
-        self.parent = parent
-        #self.childs = []
-        if "childs" in nodedict.keys():
-            for _childdict in nodedict["childs"]:
-                self.childs.append( self.__class__(parent=self, data=_childdict) )
+        # if parent:
+        #     parent.add_child(self)
+        if "childs" in treedict.keys():
+            for _childdict in treedict["childs"]:
+                #self.childs.append( self.__class__(parent=self, treedict=_childdict) )
+                self.__class__(parent=self, treedict=_childdict)
 
-    def to_dict(self, recursive=True):
+    def to_treedict(self, recursive=True):
+        # NOTE: replace vars(self) with self.__dict__ ( and self.__class__.__dict__ ?)
         _dct = {k:v for k, v in vars(self).items() if k not in ["parent", "childs"]}
         if recursive and self.childs:
             _dct["childs"] = []
             for _child in self.childs:
-                _dct["childs"].append( _child.to_dict(recursive=recursive) )
+                _dct["childs"].append( _child.to_treedict(recursive=recursive) )
         return _dct 
 
 
