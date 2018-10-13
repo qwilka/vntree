@@ -1,37 +1,75 @@
+"""
+Copyright © 2018 Stephen McEntee
+Licensed under the MIT license. 
+See «vn-tree» LICENSE file for details:
+https://github.com/qwilka/vn-tree/blob/master/LICENSE
+"""
 import collections
 import copy
+from difflib import SequenceMatcher
+import json
 import itertools
 import logging
+import os
 import pathlib 
 
 logger = logging.getLogger(__name__)
 
 
+class TreeAttr:
+    """Descriptor class for top-level Node attributes (like the «Node.name» attribute).
+    Ensures that Node attributes are stored in the «data» dictionary, facilitating serialization
+    and persistance.
+    """
+    def __init__(self, ns=None):
+        self.ns = ns    # ns=None put attribute directly in instance.data.get without namespacing
+    def __get__(self, instance, owner):
+        if self.ns in instance.data and isinstance(instance.data[self.ns], dict):
+            _meta = instance.data[self.ns].get(self.name, None)
+        else:
+            #logger.error("%s.__get__ «%s»; ns «%s» not in %s" % (self.__class__.__name__, self.name, self.ns, instance))
+            _meta = instance.data.get(self.name, None)
+        return _meta
+    def __set__(self, instance, value):
+        if self.ns:
+            instance.data[self.ns][self.name] = value
+        else:
+            instance.data[self.name] = value
+    def __set_name__(self, owner, name):
+        self.name = name
+
+
 class Node:
     """Node class for tree data structure.  
     """
-    def __init__(self, name=None, parent=None, data=None, treedict=None):
+    name = TreeAttr()
+
+    def __init__(self, name=None, parent=None, data=None, treedict=None, autoname=False):
         if data and isinstance(data, dict):
             self.data = collections.defaultdict(dict, data) # copy.deepcopy(data)
         else:
             self.data = {}
-        if name and isinstance(name, str):
-            self.name = name
-        elif "name" in self.data:
-            self.name = self.data["name"]
-        else:
-            self.name = ""
+        if name:
+            self.name = str(name)
+        # elif "name" in self.data:
+        #     self.name = self.data["name"]
+        # else:
+        #     self.name = ""
         self.childs = []
         if parent and isinstance(parent, Node):
             parent.add_child(self)
         elif parent is None:
             self.parent = parent
         else:
-            raise TypeError("Node instance «{}» argument «parent» type not valid: {}".format(name, type(parent)))
+            raise TypeError("{}.__init__: instance «{}» argument «parent» type not valid: {}".format(self.__class__.__name__, name, type(parent)))
+        if autoname and not self.name:
+            self.name = str(self.coord)
         if treedict and isinstance(treedict, dict):
-            self.from_treedict(treedict, parent)
-        if not self.name:
-            raise ValueError("{}: «name» argument not correctly specified; {}".format(self.__class__, self.data))
+            #self.from_treedict(treedict, parent)
+            self.from_treedict(treedict)
+        # self._nodepath_warn = True  # neeeds to be in root
+        # if not self.name:
+        #     raise ValueError("{}.__init__: «name» argument not correctly specified; {}".format(self.__class__.__name__, self.name))
 
 
     def __str__(self):
@@ -48,9 +86,14 @@ class Node:
             yield node
         yield self 
 
-    def add_child(self, newnode):
-        self.childs.append(newnode)
-        newnode.parent = self
+    def add_child(self, childnode):
+        if type(childnode) != self.__class__:
+            raise TypeError("{}.add_child: arg «childnode» = «{}», type {} not valid.".format(self.__class__.__name__, childnode, type(childnode)))
+        # if (self._nodepath_warn and True in list(map(lambda _n: _n.name == childnode.name, self.childs)) ):
+        #     logger.warning("%s.add_child: «%s» has duplicate child node.name = «%s»." % (self.__class__.__name__, self.name, childnode.name))
+        #     self._nodepath_warn = False  # avoid multiple warnings
+        self.childs.append(childnode)
+        childnode.parent = self
         return True    
 
     def remove_child(self, node):
@@ -58,8 +101,12 @@ class Node:
         return True
 
     @property
-    def _path(self):
-        # NOTE returns node path in form "/root/child/grandchild"
+    def nodepath(self):
+        """Return this node's nodepath in the form:
+        '/rootnode.name/childnode.name/grandchildnode.name'
+        WARNING: use of nodepath assumes that sibling nodes have unique names.
+        """
+        # NOTE returns full nodepath in form 
         _path = pathlib.PurePosixPath(self.name)
         _node = self
         while _node.parent:
@@ -69,8 +116,15 @@ class Node:
         return _path.as_posix()
 
     @property
-    def _coords(self):
-        pass
+    def coord(self):
+        _coord = []
+        _node = self
+        while _node.parent:
+            _idx = _node.parent.childs.index(_node)
+            _coord.insert(0, _idx)
+            _node = _node.parent
+        return tuple(_coord)
+
 
     def get_data(self, *keys):
         if not keys:
@@ -99,6 +153,12 @@ class Node:
                 _datadict = _datadict[_key]
         return True
 
+    def get_rootnode(self):
+        if self.parent is None:
+            return self
+        else:
+            return self.get_ancestors()[-1]
+    
     def get_ancestors(self):
         # return list of ancestor nodes starting with self.parent and ending with root
         ancestors=[]
@@ -118,22 +178,42 @@ class Node:
             _childnode = _childs[0] # return first node found with name childname
         return _childnode
 
-    def get_nodepath(self, path=None):
-        # get decendent node from path (NOTE: path is relative to self)
-        _node = self
-        if path is None or path=="." or path=="./" or path=="":
-            pass
+    def get_node_by_nodepath(self, nodepath):
+        """Get node from nodepath 
+        e.g. "/rootnode.name/child.name/gchild.name" (absolute path)
+        "child.name/gchild.name" (relative path)
+        """
+        if nodepath.lstrip().startswith((".", "./")) or not isinstance(nodepath, str):
+            logger.warning("%s.get_node_by_nodepath: arg «nodepath» = «%s», not correctly specified." % (self.__class__.__name__, nodepath))
+            return None
+        _pathlist = list(filter(None, nodepath.split("/")) ) # remove blank strings
+        if nodepath.startswith("/"):
+            _node = self.get_rootnode()
+            _pathlist.pop(0)  # remove rootnode name
         else:
-            _pathlist = path.split(pathlib.posixpath.sep) 
-            for _nodename in _pathlist:
-                if _nodename in [self.name, ".", ""]:
-                    continue
-                try:
-                    _node = _node.get_child_by_name(_nodename)
-                except:
-                    _node = None
-                    break
+            _node = self
+        for _nodename in _pathlist:
+            _node = _node.get_child_by_name(_nodename)
+            if _node is None:
+                logger.warning("%s.get_node_by_nodepath: node«%s», arg «nodepath»=«%s» not valid." % (self.__class__.__name__, self.name, nodepath))
+                return None
         return _node
+
+    def get_node_by_coord(self, coord, relative=False):
+        if not isinstance(coord, (list, tuple)) or False in list(map(lambda i: type(i)==int, coord)):
+            logger.warning("%s.get_node_by_coord: node«%s», arg «coord»=«%s», «coord» must be list or tuple of integers." % (self.__class__.__name__, self.name, coord))
+            return None
+        if relative:
+            _node = self
+        else:
+            _node = self.get_rootnode()
+        for idx in coord:
+            _node = _node.childs[idx]
+            if _node is None:
+                logger.warning("%s.get_node_by_coord: node«%s», arg «coord»=«%s» not valid." % (self.__class__.__name__, self.name, coord))
+                return None
+        return _node
+
 
     def find_one_node(self, *keys, value):
         # Note that «value» is a keyword-only argument
@@ -151,7 +231,8 @@ class Node:
             treetext += ("." + " "*3)*level + "|---{}\n".format(node.name)
         return treetext
 
-    def from_treedict(self, treedict, parent=None):
+    #def from_treedict(self, treedict, parent=None):   # TODO parent not used??
+    def from_treedict(self, treedict):
         if "data" in treedict:
             self.data = collections.defaultdict(dict, treedict["data"])
         #self.name = "name not set"  # default values for name and data, should be over-written
@@ -175,6 +256,33 @@ class Node:
             for _child in self.childs:
                 _dct["childs"].append( _child.to_treedict(recursive=recursive) )
         return _dct 
+
+    def to_json(self, filepath, default=str):
+        pass
+
+    # def from_json(self, filepath):
+    #     err = ""
+    #     _treedict = None
+    #     if isinstance(filepath, str) and os.path.isfile(filepath):
+    #         try:
+    #             with open(filepath, 'r') as _fh:
+    #                 _treedict = json.load(_fh)
+    #         except Exception as err: 
+    #             pass
+    #     if not _treedict:
+    #         logger.warning("%s.from_json: node«%s», cannot open «filepath»=«%s», %s." % (self.__class__.__name__, self.name, filepath, err))
+    #         return False
+    #     else:
+    #         self.from_treedict(treedict=_treedict)
+    #         return True
+
+    def string_diff(self, othertree):
+        return SequenceMatcher(None, 
+                                json.dumps(self.to_treedict()), 
+                                json.dumps(othertree.to_treedict())
+                                ).ratio()
+
+
 
 
 if __name__ == "__main__":

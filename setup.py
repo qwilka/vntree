@@ -1,8 +1,3 @@
-
-
-
-# https://github.com/pypa/sampleproject/blob/master/setup.py
-
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
@@ -13,7 +8,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='vntree',
-    version='0.1.0',
+    version='0.1.1',
     description='A simple tree data structure in Python.',
     long_description=long_description,
     long_description_content_type='text/markdown',
