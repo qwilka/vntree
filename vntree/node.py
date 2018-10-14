@@ -44,7 +44,7 @@ class Node:
     """
     name = TreeAttr()
 
-    def __init__(self, name=None, parent=None, data=None, treedict=None, autoname=False):
+    def __init__(self, name=None, parent=None, data=None, treedict=None):
         if data and isinstance(data, dict):
             self.data = collections.defaultdict(dict, data) # copy.deepcopy(data)
         else:
@@ -56,13 +56,25 @@ class Node:
         # else:
         #     self.name = ""
         self.childs = []
-        if parent and isinstance(parent, Node):
+        if parent and isinstance(parent, self.__class__):
             parent.add_child(self)
-        elif parent is None:
-            self.parent = parent
+        elif not parent:
+            self.parent = None
         else:
             raise TypeError("{}.__init__: instance «{}» argument «parent» type not valid: {}".format(self.__class__.__name__, name, type(parent)))
-        if autoname and not self.name:
+        # if parent:
+        #     if isinstance(parent, self.__class__):
+        #         _parent = parent
+        #     elif isinstance(parent, str):
+        #         _parent = self.get_node_by_nodepath(parent)
+        #     elif isinstance(parent, (list, tuple)):
+        #         _parent = self.get_node_by_coord(parent)
+        #     else:
+        #         raise TypeError("{}.__init__: instance «{}» argument «parent» type not valid: {}".format(self.__class__.__name__, name, type(parent)))
+        #     _parent.add_child(self)
+        # else:
+        #     self.parent = None
+        if self.name is None:
             self.name = str(self.coord)
         if treedict and isinstance(treedict, dict):
             #self.from_treedict(treedict, parent)
@@ -73,8 +85,8 @@ class Node:
 
 
     def __str__(self):
-        _level = len(self.get_ancestors())
-        return "{} level={} «{}»".format(self.__class__.__name__, _level, self.name)
+        #_level = len(self.get_ancestors())
+        return "{} coord={} «{}»".format(self.__class__.__name__, self.coord, self.name)
 
     def __iter__(self): 
         yield self  
@@ -223,13 +235,27 @@ class Node:
                 return _node
         return None
 
-    def to_texttree(self):
-        treetext = ""
+    def to_texttree(self, indent=3, func=True):
+        if indent<2:
+            indent=2
+        if func is True:  # default func prints node.name
+            func = lambda n: " {}".format(n.name)
+        _text = ""
         local_root_level = len(self.get_ancestors())
         for node in self: 
             level = len(node.get_ancestors()) - local_root_level
-            treetext += ("." + " "*3)*level + "|---{}\n".format(node.name)
-        return treetext
+            #treetext += ("." + " "*3)*level + "|---{}\n".format(node.name)
+            #_text += ("." + " "*(indent-1))*level + "|" + "-"*(indent-1)
+            #_text += ("." + " "*(indent-2))*level 
+            if level>0:
+                _text += ("." + " "*(indent-1))*(level-1) + "+" + "-"*(indent-1)
+            _text += "|"
+            # if name:
+            #     _text += "{}".format(node.name)
+            if func and callable(func):
+                _text += func(node)
+            _text += "\n"
+        return _text
 
     #def from_treedict(self, treedict, parent=None):   # TODO parent not used??
     def from_treedict(self, treedict):
