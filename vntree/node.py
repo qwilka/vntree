@@ -13,6 +13,8 @@ import logging
 import os
 import pathlib 
 
+import yaml
+
 logger = logging.getLogger(__name__)
 
 
@@ -44,7 +46,8 @@ class Node:
     """
     name = TreeAttr()
 
-    def __init__(self, name=None, parent=None, data=None, treedict=None):
+    def __init__(self, name=None, parent=None, data=None, 
+                treedict=None):
         if data and isinstance(data, dict):
             self.data = collections.defaultdict(dict, data) # copy.deepcopy(data)
         else:
@@ -79,6 +82,8 @@ class Node:
         if treedict and isinstance(treedict, dict):
             #self.from_treedict(treedict, parent)
             self.from_treedict(treedict)
+        # # if yamldata:
+        # #     self.import_yaml(yamldata)
         # self._nodepath_warn = True  # neeeds to be in root
         # if not self.name:
         #     raise ValueError("{}.__init__: «name» argument not correctly specified; {}".format(self.__class__.__name__, self.name))
@@ -304,11 +309,22 @@ class Node:
 
     def string_diff(self, othertree):
         return SequenceMatcher(None, 
-                                json.dumps(self.to_treedict()), 
-                                json.dumps(othertree.to_treedict())
+                                json.dumps(self.to_treedict(), default=str), 
+                                json.dumps(othertree.to_treedict(), default=str)
                                 ).ratio()
 
+    @classmethod
+    def setup_yaml(cls):
+        def yamlnode_constructor(loader, yamlnode) :
+            fields = loader.construct_mapping(yamlnode, deep=True)
+            return  cls(**fields)
+        yaml.SafeLoader.add_constructor('!'+cls.__name__, yamlnode_constructor)        
 
+    @classmethod
+    def import_yamltree(cls, yamltree):
+        list_of_nodes = yaml.safe_load(yamltree)
+        yamltree_root = list_of_nodes[0]
+        return yamltree_root
 
 
 if __name__ == "__main__":
