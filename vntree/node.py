@@ -197,13 +197,19 @@ class Node:
 
     def get_node_by_nodepath(self, nodepath):
         """Get node from nodepath 
-        e.g. "/rootnode.name/child.name/gchild.name" (absolute path)
-        "child.name/gchild.name" (relative path)
+        e.g. nodepath="/rootnode.name/child.name/gchild.name" (absolute path)
+        nodepath="child.name/gchild.name" (relative path)
+        WARNING: use of this method assumes that sibling nodes have unique names,
+        if this is not the case «get_node_by_coord» can be used instead.
         """
-        if nodepath.lstrip().startswith((".", "./")) or not isinstance(nodepath, str):
-            logger.warning("%s.get_node_by_nodepath: arg «nodepath» = «%s», not correctly specified." % (self.__class__.__name__, nodepath))
+        if nodepath==".":
+            return self
+        elif nodepath.lstrip().startswith((".", "./")) or not isinstance(nodepath, str):
+            logger.warning("%s.get_node_by_nodepath: arg «nodepath»=«%s», not correctly specified." % (self.__class__.__name__, nodepath))
             return None
         _pathlist = list(filter(None, nodepath.split("/")) ) # remove blank strings
+        # print("nodepath", nodepath)
+        # print(_pathlist)
         if nodepath.startswith("/"):
             _node = self.get_rootnode()
             _pathlist.pop(0)  # remove rootnode name
@@ -212,7 +218,7 @@ class Node:
         for _nodename in _pathlist:
             _node = _node.get_child_by_name(_nodename)
             if _node is None:
-                logger.warning("%s.get_node_by_nodepath: node«%s», arg «nodepath»=«%s» not valid." % (self.__class__.__name__, self.name, nodepath))
+                logger.warning("%s.get_node_by_nodepath: node«%s», arg «nodepath»=«%s», cannot find node." % (self.__class__.__name__, self.name, nodepath))
                 return None
         return _node
 
