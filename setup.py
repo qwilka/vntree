@@ -27,4 +27,7 @@ setup(
     keywords='tree data structure node',
     packages=find_packages(exclude=['docs', 'examples']),
     python_requires='>=3.6',
+    install_requires=[
+        "pyyaml",
+    ],
 )
