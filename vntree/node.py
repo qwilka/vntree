@@ -60,9 +60,10 @@ class Node:
         #     self.name = ""
         self.childs = []
         #if parent and isinstance(parent, self.__class__):
-        if parent and isinstance(self, parent.__class__):  #TODO allow mixed node types
+        #if parent and isinstance(self, parent.__class__):  #TODO allow mixed node types
+        if parent and issubclass(parent.__class__, Node):
             parent.add_child(self)
-        elif not parent:
+        elif parent is None:
             self.parent = None
         else:
             raise TypeError("{}.__init__: instance «{}» argument «parent» type not valid: {}".format(self.__class__.__name__, name, type(parent)))
@@ -106,8 +107,9 @@ class Node:
 
     def add_child(self, childnode):
         ##if type(childnode) != self.__class__:
-        if not isinstance(childnode, self.__class__):  #TODO allow mixed node types
-            raise TypeError("{}.add_child: arg «childnode» = «{}», type {} not valid.".format(self.__class__.__name__, childnode, type(childnode)))
+        #if not isinstance(childnode, self.__class__):  #TODO allow mixed node types
+        if not issubclass(childnode.__class__, Node):
+            raise TypeError("{}.add_child: arg «childnode»=«{}», type {} not valid.".format(self.__class__.__name__, childnode, type(childnode)))
         # if (self._nodepath_warn and True in list(map(lambda _n: _n.name == childnode.name, self.childs)) ):
         #     logger.warning("%s.add_child: «%s» has duplicate child node.name = «%s»." % (self.__class__.__name__, self.name, childnode.name))
         #     self._nodepath_warn = False  # avoid multiple warnings
