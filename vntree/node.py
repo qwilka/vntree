@@ -45,6 +45,7 @@ class Node:
     """Node class for tree data structure.  
     """
     name = TreeAttr()
+    _classname = TreeAttr()
 
     def __init__(self, name=None, parent=None, data=None, 
                 treedict=None):
