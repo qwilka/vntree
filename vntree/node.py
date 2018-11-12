@@ -45,12 +45,12 @@ class Node:
     """Node class for tree data structure.  
     """
     name = TreeAttr()
-    _classname = TreeAttr()
+    ##_classname = TreeAttr()
 
     def __init__(self, name=None, parent=None, data=None, 
                 treedict=None):
         if data and isinstance(data, dict):
-            self.data = collections.defaultdict(dict, data) # copy.deepcopy(data)
+            self.data = collections.defaultdict(dict, copy.deepcopy(data)) # copy.deepcopy(data)
         else:
             self.data = {}
         if name:
