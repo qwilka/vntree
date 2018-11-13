@@ -18,7 +18,7 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
-class TreeAttr:
+class NodeAttr:
     """Descriptor class for top-level Node attributes (like the «Node.name» attribute).
     Ensures that Node attributes are stored in the «data» dictionary, facilitating serialization
     and persistance.
@@ -27,28 +27,54 @@ class TreeAttr:
         self.ns = ns    # ns=None put attribute directly in instance.data.get without namespacing
     def __get__(self, instance, owner):
         if self.ns in instance.data and isinstance(instance.data[self.ns], dict):
-            _meta = instance.data[self.ns].get(self.name, None)
+            _value = instance.data[self.ns].get(self.name, None)
         else:
             #logger.error("%s.__get__ «%s»; ns «%s» not in %s" % (self.__class__.__name__, self.name, self.ns, instance))
-            _meta = instance.data.get(self.name, None)
-        return _meta
+            _value = instance.data.get(self.name, None)
+        return _value
     def __set__(self, instance, value):
         if self.ns:
             instance.data[self.ns][self.name] = value
         else:
             instance.data[self.name] = value
+    def __delete__(self, instance):
+        if self.ns and self.name in instance.data[self.ns]:
+            del instance.data[self.ns][self.name]
+        elif self.name in instance.data:
+            del instance.data[self.name]
     def __set_name__(self, owner, name):
         self.name = name
+
+
+class TreeAttr(NodeAttr):
+    def __init__(self, ns=None):
+        super().__init__(ns)
+    def __get__(self, instance, owner):
+        _value = super().__get__(instance, owner)
+        if _value is None and instance.parent:
+            _value = getattr(instance.parent, self.name)
+        return _value
+    def __set__(self, instance, value):
+        # _n = instance
+        # while _n.parent:
+        #     if (self.ns and self.name in _n.data[self.ns]) or (
+        #         self.name in _n.data):
+        #         super().__set__(_n, value)
+        #         break
+        #     _n = _n.parent
+        # #super().__set__(_n, value)
+        if instance is not instance.rootnode: #if instance is not instance.get_rootnode():
+            logger.warning("%s.__set__: non-root node «%s» set value «%s»=«%s»" % (self.__class__.__name__, instance.name, self.name, value))
+        super().__set__(instance, value)
+
 
 
 class Node:
     """Node class for tree data structure.  
     """
-    name = TreeAttr()
-    ##_classname = TreeAttr()
+    name = NodeAttr()
 
-    def __init__(self, name=None, parent=None, data=None, 
-                treedict=None):
+    def __init__(self, name=None, parent=None, data=None, treedict=None):
         if data and isinstance(data, dict):
             self.data = collections.defaultdict(dict, copy.deepcopy(data)) # copy.deepcopy(data)
         else:
@@ -175,20 +201,38 @@ class Node:
                 _datadict = _datadict[_key]
         return True
 
-    def get_rootnode(self):
-        if self.parent is None:
-            return self
-        else:
-            return self.get_ancestors()[-1]
-    
-    def get_ancestors(self):
+    # def get_rootnode(self):
+    #     if self.parent is None:
+    #         return self
+    #     else:
+    #         return self.get_ancestors()[-1]
+
+    @property
+    def rootnode(self):
+        _n = self
+        while _n.parent:
+            _n = _n.parent
+        return _n
+
+    # def get_ancestors(self):
+    #     # return list of ancestor nodes starting with self.parent and ending with root
+    #     ancestors=[]
+    #     _curnode = self
+    #     while _curnode.parent:
+    #         _curnode = _curnode.parent
+    #         ancestors.append(_curnode)
+    #     return ancestors
+
+    @property
+    def ancestors(self):
         # return list of ancestor nodes starting with self.parent and ending with root
-        ancestors=[]
-        _curnode = self
-        while _curnode.parent:
-            _curnode = _curnode.parent
-            ancestors.append(_curnode)
-        return ancestors
+        _ancestors=[]
+        _n = self
+        while _n.parent:
+            _n = _n.parent
+            _ancestors.append(_n)
+        return _ancestors
+
 
     def get_child_by_name(self, childname):
         _childs = [_child for _child in self.childs if _child.name==childname]
@@ -216,7 +260,7 @@ class Node:
         # print("nodepath", nodepath)
         # print(_pathlist)
         if nodepath.startswith("/"):
-            _node = self.get_rootnode()
+            _node = self.rootnode  # _node = self.get_rootnode()
             _pathlist.pop(0)  # remove rootnode name
         else:
             _node = self
@@ -234,7 +278,7 @@ class Node:
         if relative:
             _node = self
         else:
-            _node = self.get_rootnode()
+            _node = self.rootnode # _node = self.get_rootnode()
         for idx in coord:
             _node = _node.childs[idx]
             if _node is None:
@@ -257,9 +301,9 @@ class Node:
         if func is True:  # default func prints node.name
             func = lambda n: " {}".format(n.name)
         _text = ""
-        local_root_level = len(self.get_ancestors())
+        local_root_level = len(self.ancestors) # len(self.get_ancestors())
         for node in self: 
-            level = len(node.get_ancestors()) - local_root_level
+            level = len(node.ancestors) - local_root_level
             #treetext += ("." + " "*3)*level + "|---{}\n".format(node.name)
             #_text += ("." + " "*(indent-1))*level + "|" + "-"*(indent-1)
             #_text += ("." + " "*(indent-2))*level 

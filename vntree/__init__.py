@@ -1,1 +1,1 @@
-from .node import Node, TreeAttr
+from .node import Node, NodeAttr, TreeAttr
