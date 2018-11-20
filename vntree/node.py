@@ -63,7 +63,7 @@ class TreeAttr(NodeAttr):
         #         break
         #     _n = _n.parent
         # #super().__set__(_n, value)
-        if instance is not instance.rootnode: #if instance is not instance.get_rootnode():
+        if instance is not instance._root: #if instance is not instance.get_rootnode():
             logger.warning("%s.__set__: non-root node «%s» set value «%s»=«%s»" % (self.__class__.__name__, instance.name, self.name, value))
         super().__set__(instance, value)
 
@@ -208,7 +208,7 @@ class Node:
     #         return self.get_ancestors()[-1]
 
     @property
-    def rootnode(self):
+    def _root(self):
         _n = self
         while _n.parent:
             _n = _n.parent
@@ -260,7 +260,7 @@ class Node:
         # print("nodepath", nodepath)
         # print(_pathlist)
         if nodepath.startswith("/"):
-            _node = self.rootnode  # _node = self.get_rootnode()
+            _node = self._root  # _node = self.get_rootnode()
             _pathlist.pop(0)  # remove rootnode name
         else:
             _node = self
@@ -278,7 +278,7 @@ class Node:
         if relative:
             _node = self
         else:
-            _node = self.rootnode # _node = self.get_rootnode()
+            _node = self._root # _node = self.get_rootnode()
         for idx in coord:
             _node = _node.childs[idx]
             if _node is None:
