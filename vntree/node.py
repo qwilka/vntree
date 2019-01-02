@@ -1,8 +1,7 @@
 """
-Copyright © 2018 Stephen McEntee
+Copyright © 2018-2019 Stephen McEntee
 Licensed under the MIT license. 
-See «vn-tree» LICENSE file for details:
-https://github.com/qwilka/vn-tree/blob/master/LICENSE
+See «vn-tree» LICENSE file for details https://github.com/qwilka/vn-tree/blob/master/LICENSE
 """
 import collections
 import copy
@@ -70,7 +69,10 @@ class TreeAttr(NodeAttr):
 
 
 class Node:
-    """Node class for tree data structure.  
+    """Node is a class for creating vntree nodes.
+
+    :param name: node name
+    :type name: str or None
     """
     name = NodeAttr()
 
@@ -119,7 +121,6 @@ class Node:
 
 
     def __str__(self):
-        #_level = len(self.get_ancestors())
         return "{} coord={} «{}»".format(self.__class__.__name__, self.coord, self.name)
 
     def __iter__(self): 
@@ -132,19 +133,26 @@ class Node:
             yield node
         yield self 
 
-    def add_child(self, childnode):
-        ##if type(childnode) != self.__class__:
-        #if not isinstance(childnode, self.__class__):  #TODO allow mixed node types
-        if not issubclass(childnode.__class__, Node):
-            raise TypeError("{}.add_child: arg «childnode»=«{}», type {} not valid.".format(self.__class__.__name__, childnode, type(childnode)))
-        # if (self._nodepath_warn and True in list(map(lambda _n: _n.name == childnode.name, self.childs)) ):
-        #     logger.warning("%s.add_child: «%s» has duplicate child node.name = «%s»." % (self.__class__.__name__, self.name, childnode.name))
-        #     self._nodepath_warn = False  # avoid multiple warnings
-        self.childs.append(childnode)
-        childnode.parent = self
+    def add_child(self, node):
+        """Add a child node to the current node instance.
+
+        :param node: the child node instance.
+        :type node: Node
+        :returns: True if successful.   
+        """
+        if not issubclass(node.__class__, Node):
+            raise TypeError("{}.add_child: arg «node»=«{}», type {} not valid.".format(self.__class__.__name__, node, type(node)))
+        self.childs.append(node)
+        node.parent = self
         return True    
 
     def remove_child(self, node):
+        """Remove a child node from the current node instance.
+
+        :param node: the child node to be removed.
+        :type node: Node
+        :returns: True if successful. 
+        """
         self.childs.remove(node)
         return True
 
@@ -317,18 +325,14 @@ class Node:
             _text += "\n"
         return _text
 
-    #def from_treedict(self, treedict, parent=None):   # TODO parent not used??
+
     def from_treedict(self, treedict):
         if "data" in treedict:
             self.data = collections.defaultdict(dict, treedict["data"])
-        #self.name = "name not set"  # default values for name and data, should be over-written
-        #self.data = {}
         for key, val in treedict.items():
             if key in ["parent", "childs", "data"]:
                 continue
             setattr(self, key, val)
-        # if parent:
-        #     parent.add_child(self)
         if "childs" in treedict.keys():
             for _childdict in treedict["childs"]:
                 #self.childs.append( self.__class__(parent=self, treedict=_childdict) )
