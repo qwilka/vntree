@@ -69,10 +69,16 @@ class TreeAttr(NodeAttr):
 
 
 class Node:
-    """Node is a class for creating vntree nodes.
+    """Class for creating vntree nodes.
 
     :param name: node name
     :type name: str or None
+    :param parent: The parent node of this node.
+    :type parent: Node or None
+    :param data: Dictionary containing node data.
+    :type data: dict or None
+    :param treedict: Dictionary specifying a complete tree.
+    :type treedict: dict or None
     """
     name = NodeAttr()
 
@@ -81,57 +87,36 @@ class Node:
             self.data = collections.defaultdict(dict, copy.deepcopy(data)) # copy.deepcopy(data)
         else:
             self.data = {}
-        if name:
+        if name is not None:
             self.name = str(name)
-        # elif "name" in self.data:
-        #     self.name = self.data["name"]
-        # else:
-        #     self.name = ""
         self.childs = []
-        #if parent and isinstance(parent, self.__class__):
-        #if parent and isinstance(self, parent.__class__):  #TODO allow mixed node types
         if parent and issubclass(parent.__class__, Node):
             parent.add_child(self)
         elif parent is None:
             self.parent = None
         else:
             raise TypeError("{}.__init__: instance «{}» argument «parent» type not valid: {}".format(self.__class__.__name__, name, type(parent)))
-        # if parent:
-        #     if isinstance(parent, self.__class__):
-        #         _parent = parent
-        #     elif isinstance(parent, str):
-        #         _parent = self.get_node_by_nodepath(parent)
-        #     elif isinstance(parent, (list, tuple)):
-        #         _parent = self.get_node_by_coord(parent)
-        #     else:
-        #         raise TypeError("{}.__init__: instance «{}» argument «parent» type not valid: {}".format(self.__class__.__name__, name, type(parent)))
-        #     _parent.add_child(self)
-        # else:
-        #     self.parent = None
         if self.name is None:
             self.name = str(self.coord)
         if treedict and isinstance(treedict, dict):
-            #self.from_treedict(treedict, parent)
             self.from_treedict(treedict)
-        # # if yamldata:
-        # #     self.import_yaml(yamldata)
-        # self._nodepath_warn = True  # neeeds to be in root
-        # if not self.name:
-        #     raise ValueError("{}.__init__: «name» argument not correctly specified; {}".format(self.__class__.__name__, self.name))
 
 
     def __str__(self):
         return "{} coord={} «{}»".format(self.__class__.__name__, self.coord, self.name)
+
 
     def __iter__(self): 
         yield self  
         for node in itertools.chain(*map(iter, self.childs)):
             yield node
 
+
     def __reversed__(self):  
         for node in itertools.chain(*map(reversed, self.childs)):
             yield node
         yield self 
+
 
     def add_child(self, node):
         """Add a child node to the current node instance.
@@ -146,23 +131,49 @@ class Node:
         node.parent = self
         return True    
 
-    def remove_child(self, node):
+    def remove_child(self, idx=None, *, name=None, node=None):
         """Remove a child node from the current node instance.
 
-        :param node: the child node to be removed.
-        :type node: Node
-        :returns: True if successful. 
+        :param idx: Index of child node to be removed.
+        :type idx: int 
+        :param name: The first child node found with «name» will be removed. 
+        :type name: str
+        :param node: Child node to be removed.
+        :type node: Node 
+        :returns: The node that has been removed, or False if not successful.
+        :rtype: Node or False 
         """
-        self.childs.remove(node)
-        return True
+        if (idx and isinstance(idx, int) and 
+            -len(self.childs) <= idx < len(self.childs) ):
+                return self.childs.pop(idx)
+        if name and isinstance(name, str):
+            found_node = None
+            for _n in self.childs:
+                if _n.name == name:
+                    found_node = _n
+                    break
+            if found_node:
+                self.childs.remove(found_node)
+                return found_node
+        if node and node in self.childs:
+            self.childs.remove(node)
+            return node
+        return False
 
     @property
     def nodepath(self):
-        """Return this node's nodepath in the form:
-        '/rootnode.name/childnode.name/grandchildnode.name'
-        WARNING: use of nodepath assumes that sibling nodes have unique names.
+        """Node attribute specifying the absolute nodepath for this node. 
+        
+        Note that the absolute nodepath starts with a forward slash 
+        followed by the root node's name: e.g: 
+        «/root.name/child.name/grandchild.name»
+        Warning: it should be noted that use of nodepath assumes  
+        that sibling nodes have unique names. If unique nodepaths
+        cannot be assured, use node attribute «coord» instead.
+
+        :returns: The absolute nodepath for this node.
+        :rtype: str 
         """
-        # NOTE returns full nodepath in form 
         _path = pathlib.PurePosixPath(self.name)
         _node = self
         while _node.parent:
@@ -173,6 +184,18 @@ class Node:
 
     @property
     def coord(self):
+        """Node attribute specifying the tree coordinates for this node.
+
+        The tree coordinates of a node are expressed as a tuple of the
+        indices of the node and its ancestors, for example:
+        A grandchild node with nodepath 
+        «/root.name/root.childs[2].name/root.childs[2].childs[0].name» 
+        would have coord (2,0).
+        The root node coord is an empty tuple: ()
+
+        :returns: The tree coordinates for this node.
+        :rtype: tuple 
+        """
         _coord = []
         _node = self
         while _node.parent:

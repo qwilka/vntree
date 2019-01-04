@@ -24,7 +24,7 @@ Usage as follows...
 >>> Node(parent=c2)       # another grandchild node, name not specified
 <vntree.node.Node object at 0x7f41aeb4c048>
 >>> c1 = rootnode.get_node_by_nodepath("/rootnode/first child")
->>> c1.add_child(Node())  # grafting an external node into the tree
+>>> c1.add_child(Node(name=""))  # grafting an external node into the tree
 True
 >>> print(rootnode.to_texttree())
 | The Root Node

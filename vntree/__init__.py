@@ -1,4 +1,4 @@
-"""«vntree» is a simple tree data structure coded in Python.
+"""`vntree` is a simple tree data structure coded in Python.
 """
 
 __version__ = "0.2.0"

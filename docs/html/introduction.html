@@ -65,7 +65,7 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Node</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">c2</span><span class="p">)</span>       <span class="c1"># another grandchild node, name not specified</span>
 <span class="go">&lt;vntree.node.Node object at 0x7f41aeb4c048&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">rootnode</span><span class="o">.</span><span class="n">get_node_by_nodepath</span><span class="p">(</span><span class="s2">&quot;/rootnode/first child&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">Node</span><span class="p">())</span>  <span class="c1"># grafting an external node into the tree</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>  <span class="c1"># grafting an external node into the tree</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">rootnode</span><span class="o">.</span><span class="n">to_texttree</span><span class="p">())</span>
 <span class="go">| The Root Node</span>
