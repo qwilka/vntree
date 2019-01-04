@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Introduction &#8212; vntree 0.2.0 documentation</title>
+    <title>Introduction &#8212; vntree  documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="index.html" title="vntree documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vntree 0.2.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vntree  documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -48,6 +48,33 @@
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>To install the <cite>vntree</cite> module run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">vntree</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="basics">
+<h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
+<p>Usage as follows…</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vntree</span> <span class="k">import</span> <span class="n">Node</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rootnode</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;The Root Node&quot;</span><span class="p">)</span>    <span class="c1"># the root node has no parent</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Node</span><span class="p">(</span><span class="s2">&quot;first child&quot;</span><span class="p">,</span> <span class="n">rootnode</span><span class="p">)</span>       <span class="c1"># create a child node</span>
+<span class="go">&lt;vntree.node.Node object at 0x7f41aeb37e48&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;child 2&quot;</span><span class="p">,</span> <span class="n">rootnode</span><span class="p">)</span>      <span class="c1"># create another child node</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Node</span><span class="p">(</span><span class="s2">&quot;child3&quot;</span><span class="p">,</span> <span class="n">rootnode</span><span class="p">)</span>            <span class="c1"># create 3rd child node</span>
+<span class="go">&lt;vntree.node.Node object at 0x7f8ac02799b0&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g1</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;grandchild1&quot;</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>        <span class="c1"># child of node «child 2»</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Node</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">c2</span><span class="p">)</span>       <span class="c1"># another grandchild node, name not specified</span>
+<span class="go">&lt;vntree.node.Node object at 0x7f41aeb4c048&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">rootnode</span><span class="o">.</span><span class="n">get_node_by_nodepath</span><span class="p">(</span><span class="s2">&quot;/rootnode/first child&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">Node</span><span class="p">())</span>  <span class="c1"># grafting an external node into the tree</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">rootnode</span><span class="o">.</span><span class="n">to_texttree</span><span class="p">())</span>
+<span class="go">| The Root Node</span>
+<span class="go">+--| first child</span>
+<span class="go">.  +--| ()</span>
+<span class="go">+--| child 2</span>
+<span class="go">.  +--| grandchild1</span>
+<span class="go">.  +--| (1, 1)</span>
+<span class="go">+--| child3</span>
 </pre></div>
 </div>
 </div>
@@ -70,6 +97,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basics">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -120,7 +148,7 @@
         <li class="right" >
           <a href="index.html" title="vntree documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vntree 0.2.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vntree  documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

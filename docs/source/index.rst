@@ -8,7 +8,8 @@ vntree documentation
 
 .. automodule:: vntree
 
-
+Development of vntree is currently in alpha phase.
+Python versions 3.6+ only are supported.
 
 .. toctree::
    :maxdepth: 2
