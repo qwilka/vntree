@@ -44,17 +44,17 @@
 <h2>Node<a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="vntree.Node">
-<em class="property">class </em><code class="descclassname">vntree.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>name=None</em>, <em>parent=None</em>, <em>data=None</em>, <em>treedict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vntree.Node" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vntree.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>name=None</em>, <em>parent=None</em>, <em>data=None</em>, <em>treedict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for creating vntree nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>str</em><em> or </em><em>None</em>) – node name</li>
-<li><strong>parent</strong> (<a class="reference internal" href="#vntree.Node" title="vntree.Node"><em>Node</em></a><em> or </em><em>None</em>) – The parent node of this node.</li>
-<li><strong>data</strong> (<em>dict</em><em> or </em><em>None</em>) – Dictionary containing node data.</li>
-<li><strong>treedict</strong> (<em>dict</em><em> or </em><em>None</em>) – Dictionary specifying a complete tree.</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – node name</li>
+<li><strong>parent</strong> (<a class="reference internal" href="#vntree.Node" title="vntree.Node"><em>Node</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – The parent node of this node.</li>
+<li><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – Dictionary containing node data.</li>
+<li><strong>treedict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – Dictionary specifying a complete tree.</li>
 </ul>
 </td>
 </tr>
@@ -62,7 +62,7 @@
 </table>
 <dl class="method">
 <dt id="vntree.Node.add_child">
-<code class="descname">add_child</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#vntree.Node.add_child" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_child</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.add_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.add_child" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a child node to the current node instance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -79,7 +79,7 @@
 <dl class="attribute">
 <dt id="vntree.Node.coord">
 <code class="descname">coord</code><a class="headerlink" href="#vntree.Node.coord" title="Permalink to this definition">¶</a></dt>
-<dd><p>Node attribute specifying the tree coordinates for this node.</p>
+<dd><p>Attribute specifying the tree coordinates for this node.</p>
 <p>The tree coordinates of a node are expressed as a tuple of the
 indices of the node and its ancestors, for example:
 A grandchild node with nodepath 
@@ -92,7 +92,7 @@ The root node coord is an empty tuple: ()</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The tree coordinates for this node.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></td>
 </tr>
 </tbody>
 </table>
@@ -100,7 +100,7 @@ The root node coord is an empty tuple: ()</p>
 
 <dl class="method">
 <dt id="vntree.Node.get_node_by_nodepath">
-<code class="descname">get_node_by_nodepath</code><span class="sig-paren">(</span><em>nodepath</em><span class="sig-paren">)</span><a class="headerlink" href="#vntree.Node.get_node_by_nodepath" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_node_by_nodepath</code><span class="sig-paren">(</span><em>nodepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.get_node_by_nodepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.get_node_by_nodepath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get node from nodepath 
 e.g. nodepath=”/rootnode.name/child.name/gchild.name” (absolute path)
 nodepath=”child.name/gchild.name” (relative path)
@@ -111,7 +111,7 @@ if this is not the case «get_node_by_coord» can be used instead.</p>
 <dl class="attribute">
 <dt id="vntree.Node.nodepath">
 <code class="descname">nodepath</code><a class="headerlink" href="#vntree.Node.nodepath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Node attribute specifying the absolute nodepath for this node.</p>
+<dd><p>Attribute specifying the absolute nodepath for this node.</p>
 <p>Note that the absolute nodepath starts with a forward slash 
 followed by the root node’s name: e.g: 
 «/root.name/child.name/grandchild.name»
@@ -124,7 +124,7 @@ cannot be assured, use node attribute «coord» instead.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The absolute nodepath for this node.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -132,15 +132,15 @@ cannot be assured, use node attribute «coord» instead.</p>
 
 <dl class="method">
 <dt id="vntree.Node.remove_child">
-<code class="descname">remove_child</code><span class="sig-paren">(</span><em>idx=None</em>, <em>*</em>, <em>name=None</em>, <em>node=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vntree.Node.remove_child" title="Permalink to this definition">¶</a></dt>
+<code class="descname">remove_child</code><span class="sig-paren">(</span><em>idx=None</em>, <em>*</em>, <em>name=None</em>, <em>node=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.remove_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.remove_child" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a child node from the current node instance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>idx</strong> (<em>int</em>) – Index of child node to be removed.</li>
-<li><strong>name</strong> (<em>str</em>) – The first child node found with «name» will be removed.</li>
+<li><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Index of child node to be removed.</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The first child node found with «name» will be removed.</li>
 <li><strong>node</strong> (<a class="reference internal" href="#vntree.Node" title="vntree.Node"><em>Node</em></a>) – Child node to be removed.</li>
 </ul>
 </td>
@@ -158,6 +158,47 @@ cannot be assured, use node attribute «coord» instead.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="nodeattr">
+<h2>NodeAttr<a class="headerlink" href="#nodeattr" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vntree.NodeAttr">
+<em class="property">class </em><code class="descclassname">vntree.</code><code class="descname">NodeAttr</code><span class="sig-paren">(</span><em>ns=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#NodeAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.NodeAttr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Descriptor class for node attributes.</p>
+<p>NodeAttr attributes are stored in the node instance <cite>data</cite> dictionary. 
+This facilitates serialization and persistance of the tree.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – namespace for storing attribute in a nested dictionary in <cite>data</cite>.
+<cite>ns=None</cite> for top-level attributes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="treeattr">
+<h2>TreeAttr<a class="headerlink" href="#treeattr" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vntree.TreeAttr">
+<em class="property">class </em><code class="descclassname">vntree.</code><code class="descname">TreeAttr</code><span class="sig-paren">(</span><em>ns=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#TreeAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.TreeAttr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Descriptor class for tree attributes.  <cite>TreeAttr</cite> attribute 
+values are stored in the root node <cite>data</cite> dictionary.</p>
+<p>Storing an attribute in the root node of the tree ensures that the
+attribute can be found by all nodes in the tree. 
+<cite>TreeAttr</cite> is a subclass of <cite>NodeAttr</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – namespace for attribute. <cite>ns=None</cite> for top-level attributes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -171,6 +212,8 @@ cannot be assured, use node attribute «coord» instead.</p>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#node">Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nodeattr">NodeAttr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#treeattr">TreeAttr</a></li>
 </ul>
 </li>
 </ul>

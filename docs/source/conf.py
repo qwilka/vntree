@@ -41,6 +41,8 @@ release = ''
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.githubpages',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -176,3 +178,7 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/3', None),
+}
+intersphinx_cache_limit = 0

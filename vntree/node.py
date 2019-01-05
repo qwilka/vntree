@@ -18,12 +18,17 @@ logger = logging.getLogger(__name__)
 
 
 class NodeAttr:
-    """Descriptor class for top-level Node attributes (like the «Node.name» attribute).
-    Ensures that Node attributes are stored in the «data» dictionary, facilitating serialization
-    and persistance.
+    """Descriptor class for node attributes. 
+    
+    NodeAttr attributes are stored in the node instance `data` dictionary. 
+    This facilitates serialization and persistance of the tree.
+
+    :param ns: namespace for storing attribute in a nested dictionary in `data`.
+                `ns=None` for top-level attributes.
+    :type ns: str or None
     """
     def __init__(self, ns=None):
-        self.ns = ns    # ns=None put attribute directly in instance.data.get without namespacing
+        self.ns = ns    
     def __get__(self, instance, owner):
         if self.ns in instance.data and isinstance(instance.data[self.ns], dict):
             _value = instance.data[self.ns].get(self.name, None)
@@ -46,6 +51,16 @@ class NodeAttr:
 
 
 class TreeAttr(NodeAttr):
+    """Descriptor class for tree attributes.  `TreeAttr` attribute 
+    values are stored in the root node `data` dictionary. 
+    
+    Storing an attribute in the root node of the tree ensures that the
+    attribute can be found by all nodes in the tree. 
+    `TreeAttr` is a subclass of `NodeAttr`.
+
+    :param ns: namespace for attribute. `ns=None` for top-level attributes.
+    :type ns: str or None
+    """
     def __init__(self, ns=None):
         super().__init__(ns)
     def __get__(self, instance, owner):
@@ -54,14 +69,6 @@ class TreeAttr(NodeAttr):
             _value = getattr(instance.parent, self.name)
         return _value
     def __set__(self, instance, value):
-        # _n = instance
-        # while _n.parent:
-        #     if (self.ns and self.name in _n.data[self.ns]) or (
-        #         self.name in _n.data):
-        #         super().__set__(_n, value)
-        #         break
-        #     _n = _n.parent
-        # #super().__set__(_n, value)
         if instance is not instance._root: #if instance is not instance.get_rootnode():
             logger.warning("%s.__set__: non-root node «%s» set value «%s»=«%s»" % (self.__class__.__name__, instance.name, self.name, value))
         super().__set__(instance, value)
@@ -162,7 +169,7 @@ class Node:
 
     @property
     def nodepath(self):
-        """Node attribute specifying the absolute nodepath for this node. 
+        """Attribute specifying the absolute nodepath for this node. 
         
         Note that the absolute nodepath starts with a forward slash 
         followed by the root node's name: e.g: 
@@ -184,7 +191,7 @@ class Node:
 
     @property
     def coord(self):
-        """Node attribute specifying the tree coordinates for this node.
+        """Attribute specifying the tree coordinates for this node.
 
         The tree coordinates of a node are expressed as a tuple of the
         indices of the node and its ancestors, for example:
