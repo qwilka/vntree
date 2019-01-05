@@ -207,11 +207,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodepath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Attribute specifying the absolute nodepath for this node. </span>
+        <span class="sd">&quot;&quot;&quot;Attribute indicating the absolute nodepath for this node. </span>
 <span class="sd">        </span>
 <span class="sd">        Note that the absolute nodepath starts with a forward slash </span>
 <span class="sd">        followed by the root node&#39;s name: e.g: </span>
-<span class="sd">        «/root.name/child.name/grandchild.name»</span>
+<span class="sd">        `/root.name/child.name/grandchild.name`</span>
 <span class="sd">        Warning: it should be noted that use of nodepath assumes  </span>
 <span class="sd">        that sibling nodes have unique names. If unique nodepaths</span>
 <span class="sd">        cannot be assured, use node attribute «coord» instead.</span>
@@ -229,16 +229,16 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">coord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Attribute specifying the tree coordinates for this node.</span>
+        <span class="sd">&quot;&quot;&quot;Attribute indicating the tree coordinates for this node.</span>
 
 <span class="sd">        The tree coordinates of a node are expressed as a tuple of the</span>
 <span class="sd">        indices of the node and its ancestors, for example:</span>
 <span class="sd">        A grandchild node with nodepath </span>
-<span class="sd">        «/root.name/root.childs[2].name/root.childs[2].childs[0].name» </span>
-<span class="sd">        would have coord (2,0).</span>
-<span class="sd">        The root node coord is an empty tuple: ()</span>
+<span class="sd">        `/root.name/root.childs[2].name/root.childs[2].childs[0].name` </span>
+<span class="sd">        would have coord `(2,0)`.</span>
+<span class="sd">        The root node coord is an empty tuple: `()`</span>
 
-<span class="sd">        :returns: The tree coordinates for this node.</span>
+<span class="sd">        :returns: the tree coordinates for this node.</span>
 <span class="sd">        :rtype: tuple </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_coord</span> <span class="o">=</span> <span class="p">[]</span>
@@ -250,9 +250,18 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_coord</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.get_data"><a class="viewcode-back" href="../../api.html#vntree.Node.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a value from the instance `data` dict. </span>
+
+<span class="sd">        Nested values are accessed by specifying the keys in sequence. </span>
+<span class="sd">        e.g. `node.get_data(&quot;country&quot;, &quot;city&quot;)` would access</span>
+<span class="sd">        `node.data[&quot;country&quot;][&quot;city&quot;]`</span>
+
+<span class="sd">        :param keys: the `data` dict keys referencing the required value.</span>
+<span class="sd">        :type keys: str </span>
+<span class="sd">        :returns: the value accessed by `keys` in `data`. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">keys</span><span class="p">:</span>
-            <span class="c1">#return copy.deepcopy(self.data)</span>
             <span class="n">_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
         <span class="n">_datadict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
         <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
@@ -263,10 +272,18 @@
                 <span class="k">break</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">_val</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_val</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_val</span>
+        <span class="k">return</span> <span class="n">_val</span></div>
 
-    <span class="k">def</span> <span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="c1"># Note that «value» is a keyword-only argument</span>
+
+<div class="viewcode-block" id="Node.set_data"><a class="viewcode-back" href="../../api.html#vntree.Node.set_data">[docs]</a>    <span class="k">def</span> <span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set a value in the instance `data` dict.</span>
+
+<span class="sd">        :param keys: the `data` dict keys referencing the value in the `data` dict.</span>
+<span class="sd">        :type keys: str </span>
+<span class="sd">        :param value: the value to be set in the `data` dict. Note that</span>
+<span class="sd">            `value` is a keyword-only argument.</span>
+<span class="sd">        :returns: `True` if successful. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_datadict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
         <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">ii</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
@@ -275,32 +292,30 @@
                 <span class="k">if</span> <span class="n">_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_datadict</span><span class="p">:</span>
                     <span class="n">_datadict</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="n">_datadict</span> <span class="o">=</span> <span class="n">_datadict</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span>
-        <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
-    <span class="c1"># def get_rootnode(self):</span>
-    <span class="c1">#     if self.parent is None:</span>
-    <span class="c1">#         return self</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         return self.get_ancestors()[-1]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Attribute referencing the root node of the tree.</span>
+
+<span class="sd">        :returns: the root node of the tree containing this instance.</span>
+<span class="sd">        :rtype: Node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_n</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">while</span> <span class="n">_n</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
             <span class="n">_n</span> <span class="o">=</span> <span class="n">_n</span><span class="o">.</span><span class="n">parent</span>
         <span class="k">return</span> <span class="n">_n</span>
 
-    <span class="c1"># def get_ancestors(self):</span>
-    <span class="c1">#     # return list of ancestor nodes starting with self.parent and ending with root</span>
-    <span class="c1">#     ancestors=[]</span>
-    <span class="c1">#     _curnode = self</span>
-    <span class="c1">#     while _curnode.parent:</span>
-    <span class="c1">#         _curnode = _curnode.parent</span>
-    <span class="c1">#         ancestors.append(_curnode)</span>
-    <span class="c1">#     return ancestors</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Attribute referencing the tree ancestors of the node instance.</span>
+
+<span class="sd">        :returns: list of node ancestors in sequence, first item is </span>
+<span class="sd">            the current node instance (`self`), the last item is root.</span>
+<span class="sd">        :rtype: list of Node references</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># return list of ancestor nodes starting with self.parent and ending with root</span>
         <span class="n">_ancestors</span><span class="o">=</span><span class="p">[]</span>
         <span class="n">_n</span> <span class="o">=</span> <span class="bp">self</span>
@@ -310,22 +325,40 @@
         <span class="k">return</span> <span class="n">_ancestors</span>
 
 
-    <span class="k">def</span> <span class="nf">get_child_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">childname</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.get_child_by_name"><a class="viewcode-back" href="../../api.html#vntree.Node.get_child_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_child_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">childname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a child node of the current instance by its name.</span>
+
+<span class="sd">        :param childname: the name of the required child node.</span>
+<span class="sd">        :type childname: str</span>
+<span class="sd">        :returns: the first child node found with name `childname`.</span>
+<span class="sd">        :rtype: Node or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_childs</span> <span class="o">=</span> <span class="p">[</span><span class="n">_child</span> <span class="k">for</span> <span class="n">_child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childs</span> <span class="k">if</span> <span class="n">_child</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="n">childname</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_childs</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.get_child_by_name: node:«</span><span class="si">%s</span><span class="s2">» has more than 1 childnode with name=«</span><span class="si">%s</span><span class="s2">».&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">childname</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_childs</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
             <span class="n">_childnode</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">_childnode</span> <span class="o">=</span> <span class="n">_childs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># return first node found with name childname</span>
-        <span class="k">return</span> <span class="n">_childnode</span>
+            <span class="n">_childnode</span> <span class="o">=</span> <span class="n">_childs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="k">return</span> <span class="n">_childnode</span></div>
+
 
 <div class="viewcode-block" id="Node.get_node_by_nodepath"><a class="viewcode-back" href="../../api.html#vntree.Node.get_node_by_nodepath">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_by_nodepath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodepath</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get node from nodepath </span>
-<span class="sd">        e.g. nodepath=&quot;/rootnode.name/child.name/gchild.name&quot; (absolute path)</span>
-<span class="sd">        nodepath=&quot;child.name/gchild.name&quot; (relative path)</span>
-<span class="sd">        WARNING: use of this method assumes that sibling nodes have unique names,</span>
-<span class="sd">        if this is not the case «get_node_by_coord» can be used instead.</span>
+        <span class="sd">&quot;&quot;&quot;Get a node from a nodepath. </span>
+
+<span class="sd">        Warning: use of this method assumes that sibling nodes have unique names,</span>
+<span class="sd">        if this is not assured the `get_node_by_coord` method can be used instead.</span>
+
+<span class="sd">        |  Example with absolute nodepath: </span>
+<span class="sd">        |  `node.get_node_by_nodepath(&#39;/root.name/child.name/gchild.name&#39;)`</span>
+<span class="sd">        |  Example with relative nodepath:</span>
+<span class="sd">        |  `node.get_node_by_nodepath(&#39;child.name/gchild.name&#39;)`</span>
+
+<span class="sd">        :param nodepath: the absolute nodepath, or the nodepath relative </span>
+<span class="sd">            to the current node instance.</span>
+<span class="sd">        :type nodepath: str</span>
+<span class="sd">        :returns: the node corresponding to `nodepath`.</span>
+<span class="sd">        :rtype: Node or None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">nodepath</span><span class="o">==</span><span class="s2">&quot;.&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
@@ -333,10 +366,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.get_node_by_nodepath: arg «nodepath»=«</span><span class="si">%s</span><span class="s2">», not correctly specified.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">nodepath</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">_pathlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodepath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="p">)</span> <span class="c1"># remove blank strings</span>
-        <span class="c1"># print(&quot;nodepath&quot;, nodepath)</span>
-        <span class="c1"># print(_pathlist)</span>
         <span class="k">if</span> <span class="n">nodepath</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
-            <span class="n">_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span>  <span class="c1"># _node = self.get_rootnode()</span>
+            <span class="n">_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span>  
             <span class="n">_pathlist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># remove rootnode name</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_node</span> <span class="o">=</span> <span class="bp">self</span>
@@ -347,7 +378,18 @@
                 <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">_node</span></div>
 
-    <span class="k">def</span> <span class="nf">get_node_by_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Node.get_node_by_coord"><a class="viewcode-back" href="../../api.html#vntree.Node.get_node_by_coord">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_by_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a node from a node coord. </span>
+
+<span class="sd">        :param coord: the coordinates of the required node.</span>
+<span class="sd">        :type coord: tuple or list</span>
+<span class="sd">        :param relative: `True` if coord is relative to the node instance,</span>
+<span class="sd">            `False` for absolute coordinates.</span>
+<span class="sd">        :type relative: bool</span>
+<span class="sd">        :returns: the node corresponding to `coord`.</span>
+<span class="sd">        :rtype: Node or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="kc">False</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">==</span><span class="nb">int</span><span class="p">,</span> <span class="n">coord</span><span class="p">)):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.get_node_by_coord: node«</span><span class="si">%s</span><span class="s2">», arg «coord»=«</span><span class="si">%s</span><span class="s2">», «coord» must be list or tuple of integers.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">coord</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -360,38 +402,70 @@
             <span class="k">if</span> <span class="n">_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.get_node_by_coord: node«</span><span class="si">%s</span><span class="s2">», arg «coord»=«</span><span class="si">%s</span><span class="s2">» not valid.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">coord</span><span class="p">))</span>
                 <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">_node</span>
+        <span class="k">return</span> <span class="n">_node</span></div>
 
 
-    <span class="k">def</span> <span class="nf">find_one_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="c1"># Note that «value» is a keyword-only argument</span>
-        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+<div class="viewcode-block" id="Node.find_one_node"><a class="viewcode-back" href="../../api.html#vntree.Node.find_one_node">[docs]</a>    <span class="k">def</span> <span class="nf">find_one_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">decend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find a node on the branch of the instance with a</span>
+<span class="sd">        `keys=data` item in the `data` dict. </span>
+
+<span class="sd">        Nested values are accessed by specifying the keys in sequence. </span>
+<span class="sd">        e.g. `node.get_data(&quot;country&quot;, &quot;city&quot;)` would access</span>
+<span class="sd">        `node.data[&quot;country&quot;][&quot;city&quot;]`</span>
+
+<span class="sd">        :param keys: the `data` dict key(s) referencing the required value.</span>
+<span class="sd">        :type keys: str </span>
+<span class="sd">        :param value: the value corresponding to `keys`. Note that</span>
+<span class="sd">            `value` is a keyword-only argument.</span>
+<span class="sd">        :param decend: `decend=True` traverse down the branch sub-tree  </span>
+<span class="sd">            starting from `self`. `decend=False` traverse up the   </span>
+<span class="sd">            branch from `self` towards root.</span>
+<span class="sd">        :type decend: bool </span>
+<span class="sd">        :returns: the first node found with `keys=data` in the `data` dict. </span>
+<span class="sd">        :rtype: Node or None </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">decend</span><span class="p">:</span>
+            <span class="n">traversal</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">traversal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span>
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="n">traversal</span><span class="p">:</span>
             <span class="n">_val</span> <span class="o">=</span> <span class="n">_node</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="o">*</span><span class="n">keys</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">_val</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">_node</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="nf">to_texttree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Node.to_texttree"><a class="viewcode-back" href="../../api.html#vntree.Node.to_texttree">[docs]</a>    <span class="k">def</span> <span class="nf">to_texttree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a text representation of the (sub-)tree rooted at </span>
+<span class="sd">        the current node instance (`self`).</span>
+
+<span class="sd">        :param indent: the indentation width for each tree level.</span>
+<span class="sd">        :type indent: int</span>
+<span class="sd">        :param func: function returning a string representation for </span>
+<span class="sd">            each node. e.g. `func=lambda n: &quot; {}&quot;.format(n.coord)`</span>
+<span class="sd">            would show the node coordinates. </span>
+<span class="sd">            `func=True` node.name displayed for each node. </span>
+<span class="sd">            `func=False` no node representation, just</span>
+<span class="sd">            the tree structure is displayed.</span>
+<span class="sd">        :type func: function or bool</span>
+<span class="sd">        :returns: a string representation of the sub-tree.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">indent</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">:</span>
             <span class="n">indent</span><span class="o">=</span><span class="mi">2</span>
         <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>  <span class="c1"># default func prints node.name</span>
             <span class="n">func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">local_root_level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="p">)</span> <span class="c1"># len(self.get_ancestors())</span>
+        <span class="n">local_root_level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="p">)</span> 
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span> 
             <span class="n">level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">ancestors</span><span class="p">)</span> <span class="o">-</span> <span class="n">local_root_level</span>
-            <span class="c1">#treetext += (&quot;.&quot; + &quot; &quot;*3)*level + &quot;|---{}\n&quot;.format(node.name)</span>
-            <span class="c1">#_text += (&quot;.&quot; + &quot; &quot;*(indent-1))*level + &quot;|&quot; + &quot;-&quot;*(indent-1)</span>
-            <span class="c1">#_text += (&quot;.&quot; + &quot; &quot;*(indent-2))*level </span>
             <span class="k">if</span> <span class="n">level</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
                 <span class="n">_text</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">indent</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">level</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;+&quot;</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="p">(</span><span class="n">indent</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">_text</span> <span class="o">+=</span> <span class="s2">&quot;|&quot;</span>
-            <span class="c1"># if name:</span>
-            <span class="c1">#     _text += &quot;{}&quot;.format(node.name)</span>
             <span class="k">if</span> <span class="n">func</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
                 <span class="n">_text</span> <span class="o">+=</span> <span class="n">func</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="n">_text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="k">return</span> <span class="n">_text</span>
+        <span class="k">return</span> <span class="n">_text</span></div>
 
 
     <span class="k">def</span> <span class="nf">from_treedict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">treedict</span><span class="p">):</span>
@@ -434,11 +508,22 @@
     <span class="c1">#         self.from_treedict(treedict=_treedict)</span>
     <span class="c1">#         return True</span>
 
-    <span class="k">def</span> <span class="nf">string_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">othertree</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.tree_compare"><a class="viewcode-back" href="../../api.html#vntree.Node.tree_compare">[docs]</a>    <span class="k">def</span> <span class="nf">tree_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">othertree</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compare the (sub-)tree rooted at `self` with another tree.</span>
+
+<span class="sd">        `tree_compare` converts the trees being compared into JSON string</span>
+<span class="sd">        representations, and uses `difflib.SequenceMatcher().ratio()` to</span>
+<span class="sd">        calculate a measure of the similarity of the strings.</span>
+
+<span class="sd">        :param othertree: the other tree for comparison.</span>
+<span class="sd">        :type othertree: Node</span>
+<span class="sd">        :returns: similarity of the trees as a number between 0 and 1. </span>
+<span class="sd">        :rtype: float </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">SequenceMatcher</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> 
                                 <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_treedict</span><span class="p">(),</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">),</span> 
                                 <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">othertree</span><span class="o">.</span><span class="n">to_treedict</span><span class="p">(),</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-                                <span class="p">)</span><span class="o">.</span><span class="n">ratio</span><span class="p">()</span>
+                                <span class="p">)</span><span class="o">.</span><span class="n">ratio</span><span class="p">()</span></div>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setup_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>

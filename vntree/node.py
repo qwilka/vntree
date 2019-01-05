@@ -169,11 +169,11 @@ class Node:
 
     @property
     def nodepath(self):
-        """Attribute specifying the absolute nodepath for this node. 
+        """Attribute indicating the absolute nodepath for this node. 
         
         Note that the absolute nodepath starts with a forward slash 
         followed by the root node's name: e.g: 
-        «/root.name/child.name/grandchild.name»
+        `/root.name/child.name/grandchild.name`
         Warning: it should be noted that use of nodepath assumes  
         that sibling nodes have unique names. If unique nodepaths
         cannot be assured, use node attribute «coord» instead.
@@ -191,16 +191,16 @@ class Node:
 
     @property
     def coord(self):
-        """Attribute specifying the tree coordinates for this node.
+        """Attribute indicating the tree coordinates for this node.
 
         The tree coordinates of a node are expressed as a tuple of the
         indices of the node and its ancestors, for example:
         A grandchild node with nodepath 
-        «/root.name/root.childs[2].name/root.childs[2].childs[0].name» 
-        would have coord (2,0).
-        The root node coord is an empty tuple: ()
+        `/root.name/root.childs[2].name/root.childs[2].childs[0].name` 
+        would have coord `(2,0)`.
+        The root node coord is an empty tuple: `()`
 
-        :returns: The tree coordinates for this node.
+        :returns: the tree coordinates for this node.
         :rtype: tuple 
         """
         _coord = []
@@ -213,8 +213,17 @@ class Node:
 
 
     def get_data(self, *keys):
+        """Get a value from the instance `data` dict. 
+
+        Nested values are accessed by specifying the keys in sequence. 
+        e.g. `node.get_data("country", "city")` would access
+        `node.data["country"]["city"]`
+
+        :param keys: the `data` dict keys referencing the required value.
+        :type keys: str 
+        :returns: the value accessed by `keys` in `data`. 
+        """
         if not keys:
-            #return copy.deepcopy(self.data)
             _val = self.data
         _datadict = self.data
         for _key in keys:
@@ -227,8 +236,16 @@ class Node:
             _val = copy.deepcopy(_val)
         return _val
 
+
     def set_data(self, *keys, value):
-        # Note that «value» is a keyword-only argument
+        """Set a value in the instance `data` dict.
+
+        :param keys: the `data` dict keys referencing the value in the `data` dict.
+        :type keys: str 
+        :param value: the value to be set in the `data` dict. Note that
+            `value` is a keyword-only argument.
+        :returns: `True` if successful. 
+        """
         _datadict = self.data
         for ii, _key in enumerate(keys):
             if ii==len(keys)-1:
@@ -239,30 +256,28 @@ class Node:
                 _datadict = _datadict[_key]
         return True
 
-    # def get_rootnode(self):
-    #     if self.parent is None:
-    #         return self
-    #     else:
-    #         return self.get_ancestors()[-1]
 
     @property
     def _root(self):
+        """Attribute referencing the root node of the tree.
+
+        :returns: the root node of the tree containing this instance.
+        :rtype: Node
+        """
         _n = self
         while _n.parent:
             _n = _n.parent
         return _n
 
-    # def get_ancestors(self):
-    #     # return list of ancestor nodes starting with self.parent and ending with root
-    #     ancestors=[]
-    #     _curnode = self
-    #     while _curnode.parent:
-    #         _curnode = _curnode.parent
-    #         ancestors.append(_curnode)
-    #     return ancestors
 
     @property
     def ancestors(self):
+        """Attribute referencing the tree ancestors of the node instance.
+
+        :returns: list of node ancestors in sequence, first item is 
+            the current node instance (`self`), the last item is root.
+        :rtype: list of Node references
+        """
         # return list of ancestor nodes starting with self.parent and ending with root
         _ancestors=[]
         _n = self
@@ -273,21 +288,39 @@ class Node:
 
 
     def get_child_by_name(self, childname):
+        """Get a child node of the current instance by its name.
+
+        :param childname: the name of the required child node.
+        :type childname: str
+        :returns: the first child node found with name `childname`.
+        :rtype: Node or None
+        """
         _childs = [_child for _child in self.childs if _child.name==childname]
         if len(_childs)>1:
             logger.warning("%s.get_child_by_name: node:«%s» has more than 1 childnode with name=«%s»." % (self.__class__.__name__, self.name, childname))
         if len(_childs)==0:
             _childnode = None
         else:
-            _childnode = _childs[0] # return first node found with name childname
+            _childnode = _childs[0] 
         return _childnode
 
+
     def get_node_by_nodepath(self, nodepath):
-        """Get node from nodepath 
-        e.g. nodepath="/rootnode.name/child.name/gchild.name" (absolute path)
-        nodepath="child.name/gchild.name" (relative path)
-        WARNING: use of this method assumes that sibling nodes have unique names,
-        if this is not the case «get_node_by_coord» can be used instead.
+        """Get a node from a nodepath. 
+
+        Warning: use of this method assumes that sibling nodes have unique names,
+        if this is not assured the `get_node_by_coord` method can be used instead.
+
+        |  Example with absolute nodepath: 
+        |  `node.get_node_by_nodepath('/root.name/child.name/gchild.name')`
+        |  Example with relative nodepath:
+        |  `node.get_node_by_nodepath('child.name/gchild.name')`
+
+        :param nodepath: the absolute nodepath, or the nodepath relative 
+            to the current node instance.
+        :type nodepath: str
+        :returns: the node corresponding to `nodepath`.
+        :rtype: Node or None
         """
         if nodepath==".":
             return self
@@ -295,10 +328,8 @@ class Node:
             logger.warning("%s.get_node_by_nodepath: arg «nodepath»=«%s», not correctly specified." % (self.__class__.__name__, nodepath))
             return None
         _pathlist = list(filter(None, nodepath.split("/")) ) # remove blank strings
-        # print("nodepath", nodepath)
-        # print(_pathlist)
         if nodepath.startswith("/"):
-            _node = self._root  # _node = self.get_rootnode()
+            _node = self._root  
             _pathlist.pop(0)  # remove rootnode name
         else:
             _node = self
@@ -309,7 +340,18 @@ class Node:
                 return None
         return _node
 
+
     def get_node_by_coord(self, coord, relative=False):
+        """Get a node from a node coord. 
+
+        :param coord: the coordinates of the required node.
+        :type coord: tuple or list
+        :param relative: `True` if coord is relative to the node instance,
+            `False` for absolute coordinates.
+        :type relative: bool
+        :returns: the node corresponding to `coord`.
+        :rtype: Node or None
+        """
         if not isinstance(coord, (list, tuple)) or False in list(map(lambda i: type(i)==int, coord)):
             logger.warning("%s.get_node_by_coord: node«%s», arg «coord»=«%s», «coord» must be list or tuple of integers." % (self.__class__.__name__, self.name, coord))
             return None
@@ -325,31 +367,63 @@ class Node:
         return _node
 
 
-    def find_one_node(self, *keys, value):
-        # Note that «value» is a keyword-only argument
-        for _node in self:
+    def find_one_node(self, *keys, value, decend=True):
+        """Find a node on the branch of the instance with a
+        `keys=data` item in the `data` dict. 
+
+        Nested values are accessed by specifying the keys in sequence. 
+        e.g. `node.get_data("country", "city")` would access
+        `node.data["country"]["city"]`
+
+        :param keys: the `data` dict key(s) referencing the required value.
+        :type keys: str 
+        :param value: the value corresponding to `keys`. Note that
+            `value` is a keyword-only argument.
+        :param decend: `decend=True` traverse down the branch sub-tree  
+            starting from `self`. `decend=False` traverse up the   
+            branch from `self` towards root.
+        :type decend: bool 
+        :returns: the first node found with `keys=data` in the `data` dict. 
+        :rtype: Node or None 
+        """
+        if decend:
+            traversal = self
+        else:
+            traversal = self.ancestors
+        for _node in traversal:
             _val = _node.get_data(*keys)
             if _val == value:
                 return _node
         return None
 
+
     def to_texttree(self, indent=3, func=True):
+        """Return a text representation of the (sub-)tree rooted at 
+        the current node instance (`self`).
+
+        :param indent: the indentation width for each tree level.
+        :type indent: int
+        :param func: function returning a string representation for 
+            each node. e.g. `func=lambda n: " {}".format(n.coord)`
+            would show the node coordinates. 
+            `func=True` node.name displayed for each node. 
+            `func=False` no node representation, just
+            the tree structure is displayed.
+        :type func: function or bool
+        :returns: a string representation of the sub-tree.
+        :rtype: str
+        """
         if indent<2:
             indent=2
         if func is True:  # default func prints node.name
             func = lambda n: " {}".format(n.name)
         _text = ""
-        local_root_level = len(self.ancestors) # len(self.get_ancestors())
+        local_root_level = len(self.ancestors) 
         for node in self: 
             level = len(node.ancestors) - local_root_level
-            #treetext += ("." + " "*3)*level + "|---{}\n".format(node.name)
-            #_text += ("." + " "*(indent-1))*level + "|" + "-"*(indent-1)
-            #_text += ("." + " "*(indent-2))*level 
             if level>0:
                 _text += ("." + " "*(indent-1))*(level-1) + "+" + "-"*(indent-1)
             _text += "|"
-            # if name:
-            #     _text += "{}".format(node.name)
             if func and callable(func):
                 _text += func(node)
             _text += "\n"
@@ -396,7 +470,18 @@ class Node:
     #         self.from_treedict(treedict=_treedict)
     #         return True
 
-    def string_diff(self, othertree):
+    def tree_compare(self, othertree):
+        """Compare the (sub-)tree rooted at `self` with another tree.
+
+        `tree_compare` converts the trees being compared into JSON string
+        representations, and uses `difflib.SequenceMatcher().ratio()` to
+        calculate a measure of the similarity of the strings.
+
+        :param othertree: the other tree for comparison.
+        :type othertree: Node
+        :returns: similarity of the trees as a number between 0 and 1. 
+        :rtype: float 
+        """
         return SequenceMatcher(None, 
                                 json.dumps(self.to_treedict(), default=str), 
                                 json.dumps(othertree.to_treedict(), default=str)

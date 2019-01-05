@@ -45,7 +45,7 @@ class BasicTests(unittest.TestCase):
     def test_yamltree_compare(self):
         ytreeroot = Node.import_yamltree(yamltree)
         self.assertFalse(ytreeroot is rootnode)
-        self.assertEqual(rootnode.string_diff(ytreeroot), 1.0)
+        self.assertEqual(rootnode.tree_compare(ytreeroot), 1.0)
 
 
 if __name__ == '__main__':

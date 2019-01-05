@@ -26,7 +26,7 @@ class BasicTests(unittest.TestCase):
         newtreedict = rootnode.to_treedict()
         newtree = Node(treedict=newtreedict)
         self.assertFalse(newtree is rootnode)
-        self.assertEqual(rootnode.string_diff(newtree), 1.0)
+        self.assertEqual(rootnode.tree_compare(newtree), 1.0)
 
 
 if __name__ == '__main__':

@@ -77,20 +77,37 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="vntree.Node.coord">
-<code class="descname">coord</code><a class="headerlink" href="#vntree.Node.coord" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute specifying the tree coordinates for this node.</p>
-<p>The tree coordinates of a node are expressed as a tuple of the
-indices of the node and its ancestors, for example:
-A grandchild node with nodepath 
-«/root.name/root.childs[2].name/root.childs[2].childs[0].name» 
-would have coord (2,0).
-The root node coord is an empty tuple: ()</p>
+<dt id="vntree.Node.ancestors">
+<code class="descname">ancestors</code><a class="headerlink" href="#vntree.Node.ancestors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute referencing the tree ancestors of the node instance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The tree coordinates for this node.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of node ancestors in sequence, first item is 
+the current node instance (<cite>self</cite>), the last item is root.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of Node references</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vntree.Node.coord">
+<code class="descname">coord</code><a class="headerlink" href="#vntree.Node.coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute indicating the tree coordinates for this node.</p>
+<p>The tree coordinates of a node are expressed as a tuple of the
+indices of the node and its ancestors, for example:
+A grandchild node with nodepath 
+<cite>/root.name/root.childs[2].name/root.childs[2].childs[0].name</cite> 
+would have coord <cite>(2,0)</cite>.
+The root node coord is an empty tuple: <cite>()</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the tree coordinates for this node.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></td>
 </tr>
@@ -99,22 +116,133 @@ The root node coord is an empty tuple: ()</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="vntree.Node.find_one_node">
+<code class="descname">find_one_node</code><span class="sig-paren">(</span><em>*keys</em>, <em>value</em>, <em>decend=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.find_one_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.find_one_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a node on the branch of the instance with a
+<cite>keys=data</cite> item in the <cite>data</cite> dict.</p>
+<p>Nested values are accessed by specifying the keys in sequence. 
+e.g. <cite>node.get_data(“country”, “city”)</cite> would access
+<cite>node.data[“country”][“city”]</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>keys</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the <cite>data</cite> dict key(s) referencing the required value.</li>
+<li><strong>value</strong> – the value corresponding to <cite>keys</cite>. Note that
+<cite>value</cite> is a keyword-only argument.</li>
+<li><strong>decend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – <cite>decend=True</cite> traverse down the branch sub-tree  
+starting from <cite>self</cite>. <cite>decend=False</cite> traverse up the   
+branch from <cite>self</cite> towards root.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the first node found with <cite>keys=data</cite> in the <cite>data</cite> dict.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vntree.Node" title="vntree.Node">Node</a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vntree.Node.get_child_by_name">
+<code class="descname">get_child_by_name</code><span class="sig-paren">(</span><em>childname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.get_child_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.get_child_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a child node of the current instance by its name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>childname</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the name of the required child node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the first child node found with name <cite>childname</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#vntree.Node" title="vntree.Node">Node</a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vntree.Node.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>*keys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value from the instance <cite>data</cite> dict.</p>
+<p>Nested values are accessed by specifying the keys in sequence. 
+e.g. <cite>node.get_data(“country”, “city”)</cite> would access
+<cite>node.data[“country”][“city”]</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>keys</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the <cite>data</cite> dict keys referencing the required value.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the value accessed by <cite>keys</cite> in <cite>data</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vntree.Node.get_node_by_coord">
+<code class="descname">get_node_by_coord</code><span class="sig-paren">(</span><em>coord</em>, <em>relative=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.get_node_by_coord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.get_node_by_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a node from a node coord.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coord</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – the coordinates of the required node.</li>
+<li><strong>relative</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – <cite>True</cite> if coord is relative to the node instance,
+<cite>False</cite> for absolute coordinates.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the node corresponding to <cite>coord</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vntree.Node" title="vntree.Node">Node</a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="vntree.Node.get_node_by_nodepath">
 <code class="descname">get_node_by_nodepath</code><span class="sig-paren">(</span><em>nodepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.get_node_by_nodepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.get_node_by_nodepath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get node from nodepath 
-e.g. nodepath=”/rootnode.name/child.name/gchild.name” (absolute path)
-nodepath=”child.name/gchild.name” (relative path)
-WARNING: use of this method assumes that sibling nodes have unique names,
-if this is not the case «get_node_by_coord» can be used instead.</p>
+<dd><p>Get a node from a nodepath.</p>
+<p>Warning: use of this method assumes that sibling nodes have unique names,
+if this is not assured the <cite>get_node_by_coord</cite> method can be used instead.</p>
+<div class="line-block">
+<div class="line">Example with absolute nodepath: </div>
+<div class="line"><cite>node.get_node_by_nodepath(‘/root.name/child.name/gchild.name’)</cite></div>
+<div class="line">Example with relative nodepath:</div>
+<div class="line"><cite>node.get_node_by_nodepath(‘child.name/gchild.name’)</cite></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the absolute nodepath, or the nodepath relative 
+to the current node instance.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the node corresponding to <cite>nodepath</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#vntree.Node" title="vntree.Node">Node</a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="vntree.Node.nodepath">
 <code class="descname">nodepath</code><a class="headerlink" href="#vntree.Node.nodepath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute specifying the absolute nodepath for this node.</p>
+<dd><p>Attribute indicating the absolute nodepath for this node.</p>
 <p>Note that the absolute nodepath starts with a forward slash 
 followed by the root node’s name: e.g: 
-«/root.name/child.name/grandchild.name»
+<cite>/root.name/child.name/grandchild.name</cite>
 Warning: it should be noted that use of nodepath assumes  
 that sibling nodes have unique names. If unique nodepaths
 cannot be assured, use node attribute «coord» instead.</p>
@@ -150,6 +278,79 @@ cannot be assured, use node attribute «coord» instead.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vntree.Node" title="vntree.Node">Node</a> or False</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vntree.Node.set_data">
+<code class="descname">set_data</code><span class="sig-paren">(</span><em>*keys</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a value in the instance <cite>data</cite> dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>keys</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the <cite>data</cite> dict keys referencing the value in the <cite>data</cite> dict.</li>
+<li><strong>value</strong> – the value to be set in the <cite>data</cite> dict. Note that
+<cite>value</cite> is a keyword-only argument.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>True</cite> if successful.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vntree.Node.to_texttree">
+<code class="descname">to_texttree</code><span class="sig-paren">(</span><em>indent=3</em>, <em>func=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.to_texttree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.to_texttree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a text representation of the (sub-)tree rooted at 
+the current node instance (<cite>self</cite>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the indentation width for each tree level.</li>
+<li><strong>func</strong> (<em>function</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – function returning a string representation for 
+each node. e.g. <cite>func=lambda n: ” {}”.format(n.coord)</cite>
+would show the node coordinates. 
+<cite>func=True</cite> node.name displayed for each node. 
+<cite>func=False</cite> no node representation, just
+the tree structure is displayed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a string representation of the sub-tree.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vntree.Node.tree_compare">
+<code class="descname">tree_compare</code><span class="sig-paren">(</span><em>othertree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.tree_compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.tree_compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare the (sub-)tree rooted at <cite>self</cite> with another tree.</p>
+<p><cite>tree_compare</cite> converts the trees being compared into JSON string
+representations, and uses <cite>difflib.SequenceMatcher().ratio()</cite> to
+calculate a measure of the similarity of the strings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>othertree</strong> (<a class="reference internal" href="#vntree.Node" title="vntree.Node"><em>Node</em></a>) – the other tree for comparison.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">similarity of the trees as a number between 0 and 1.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
 </tr>
 </tbody>
 </table>
