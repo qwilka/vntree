@@ -87,15 +87,19 @@ class Node:
     :param treedict: Dictionary specifying a complete tree.
     :type treedict: dict or None
     """
+    YAML_setup = False
     name = NodeAttr()
+
 
     def __init__(self, name=None, parent=None, data=None, treedict=None):
         if data and isinstance(data, dict):
             self.data = collections.defaultdict(dict, copy.deepcopy(data)) # copy.deepcopy(data)
         else:
             self.data = {}
-        if name is not None:
+        if name:
             self.name = str(name)
+        elif not getattr(self, "name", None) and name is None:
+            self.name = ""
         self.childs = []
         if parent and issubclass(parent.__class__, Node):
             parent.add_child(self)
@@ -103,8 +107,8 @@ class Node:
             self.parent = None
         else:
             raise TypeError("{}.__init__: instance «{}» argument «parent» type not valid: {}".format(self.__class__.__name__, name, type(parent)))
-        if self.name is None:
-            self.name = str(self.coord)
+        if callable(name):
+            self.name = str(name(self))
         if treedict and isinstance(treedict, dict):
             self.from_treedict(treedict)
 
@@ -398,19 +402,19 @@ class Node:
 
 
     def to_texttree(self, indent=3, func=True):
-        """Return a text representation of the (sub-)tree rooted at 
-        the current node instance (`self`).
+        """Method returning a text representation of the (sub-)tree  
+        rooted at the current node instance (`self`).
 
         :param indent: the indentation width for each tree level.
         :type indent: int
         :param func: function returning a string representation for 
-            each node. e.g. `func=lambda n: " {}".format(n.coord)`
+            each node. e.g. `func=lambda n: str(n.coord)`
             would show the node coordinates. 
             `func=True` node.name displayed for each node. 
             `func=False` no node representation, just
             the tree structure is displayed.
         :type func: function or bool
-        :returns: a string representation of the sub-tree.
+        :returns: a string representation of the tree.
         :rtype: str
         """
         if indent<2:
@@ -487,16 +491,47 @@ class Node:
                                 json.dumps(othertree.to_treedict(), default=str)
                                 ).ratio()
 
+
     @classmethod
     def setup_yaml(cls):
         def yamlnode_constructor(loader, yamlnode) :
             fields = loader.construct_mapping(yamlnode, deep=True)
             return  cls(**fields)
-        yaml.SafeLoader.add_constructor('!'+cls.__name__, yamlnode_constructor)        
+        yaml.SafeLoader.add_constructor('!'+cls.__name__, yamlnode_constructor)
+       
 
     @classmethod
-    def import_yamltree(cls, yamltree):
-        list_of_nodes = yaml.safe_load(yamltree)
+    def yaml2tree(cls, yamltree):
+        """Class method that creates a tree from YAML.
+
+        | # Example yamltree data:
+        | - !Node &root
+        |   name: "root node"
+        |   parent: null
+        |   data:
+        |     testpara: 111
+        | - !Node &child1
+        |   name: "child node"
+        |   parent: *root
+        | - !Node &gc1
+        |   name: "grand-child node"
+        |   parent: *child1
+
+        :param yamltree: a string of YAML describing the nodes in the
+            tree, or the path to a file containing the data.
+        :type yamltree: str
+        :returns: the root node of the tree. 
+        :rtype: Node 
+        """
+        if not cls.YAML_setup:
+            cls.setup_yaml()
+            cls.YAML_setup = True 
+        if os.path.isfile(yamltree):
+            with open(yamltree) as fh:
+                yaml_data = fh.read()
+        else:
+            yaml_data = yamltree
+        list_of_nodes = yaml.safe_load(yaml_data)
         yamltree_root = list_of_nodes[0]
         return yamltree_root
 

@@ -10,7 +10,7 @@ from vntree import Node
 import yaml
 
 
-Node.setup_yaml()
+#Node.setup_yaml()
 
 yamltree = """
 - !Node &root
@@ -49,7 +49,7 @@ yamltree = """
 # print(list_of_nodes)
 # rootnode = list_of_nodes[0]
 
-rootnode = Node.import_yamltree(yamltree)
+rootnode = Node.yaml2tree(yamltree)
 
 print(rootnode.to_texttree(func=False )) # func=False supress printing node names
 print(rootnode.to_texttree(func=lambda n: "{}, coord={}".format(n.name, n.coord)) )

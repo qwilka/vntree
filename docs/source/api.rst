@@ -1,6 +1,9 @@
 API reference
 =================
 
+.. automodule:: vntree
+
+.. contents:: :local:
 
 Node
 ---------

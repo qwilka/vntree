@@ -1,12 +1,10 @@
-.. vntree documentation master file, created by
-   sphinx-quickstart on Tue Jan  1 21:02:06 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 vntree documentation
 ===================================
 
-.. automodule:: vntree
+`vntree` is a Python module for creating 
+`tree data structures <https://en.wikipedia.org/wiki/Tree_(data_structure)>`_. 
+
+
 
 Development of vntree is currently in alpha phase.
 Python versions 3.6+ only are supported.
@@ -15,6 +13,7 @@ Python versions 3.6+ only are supported.
    :maxdepth: 2
 
    introduction
+   user-guide
    api
 
 

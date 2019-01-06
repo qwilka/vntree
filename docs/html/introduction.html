@@ -15,7 +15,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API reference" href="api.html" />
+    <link rel="next" title="User Guide" href="user-guide.html" />
     <link rel="prev" title="vntree documentation" href="index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -28,7 +28,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="API reference"
+          <a href="user-guide.html" title="User Guide"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="vntree documentation"
@@ -44,16 +44,33 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p><cite>vntree</cite> is a Python module for creating
+<a class="reference external" href="https://en.wikipedia.org/wiki/Tree_(data_structure)">tree data structures</a>.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#installation" id="id1">Installation</a></li>
+<li><a class="reference internal" href="#basic-usage" id="id2">Basic Usage</a></li>
+<li><a class="reference internal" href="#references" id="id3">References</a></li>
+</ul>
+</div>
 <div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id1">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>To install the <cite>vntree</cite> module run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">vntree</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="basics">
-<h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
-<p>Usage as follows…</p>
+<div class="section" id="basic-usage">
+<h2><a class="toc-backref" href="#id2">Basic Usage</a><a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p><cite>vntree</cite> composes trees from <cite>Node</cite> class instances.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vntree</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="n">rootnode</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;root-node&quot;</span><span class="p">)</span>    <span class="c1"># the root node has no parent</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;child1&quot;</span><span class="p">,</span> <span class="n">rootnode</span><span class="p">)</span>   <span class="c1"># the first child of the root node</span>
+<span class="n">Node</span><span class="p">(</span><span class="s2">&quot;child2&quot;</span><span class="p">,</span> <span class="n">rootnode</span><span class="p">)</span>        <span class="c1"># the second child of the root</span>
+<span class="n">Node</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">c1</span><span class="p">)</span>        <span class="c1"># a grandchild (level 2) node without a name</span>
+</pre></div>
+</div>
+<p>An example of creating a simple tree in the Python console:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vntree</span> <span class="k">import</span> <span class="n">Node</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rootnode</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;The Root Node&quot;</span><span class="p">)</span>    <span class="c1"># the root node has no parent</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Node</span><span class="p">(</span><span class="s2">&quot;first child&quot;</span><span class="p">,</span> <span class="n">rootnode</span><span class="p">)</span>       <span class="c1"># create a child node</span>
@@ -65,21 +82,21 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Node</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">c2</span><span class="p">)</span>       <span class="c1"># another grandchild node, name not specified</span>
 <span class="go">&lt;vntree.node.Node object at 0x7f41aeb4c048&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">rootnode</span><span class="o">.</span><span class="n">get_node_by_nodepath</span><span class="p">(</span><span class="s2">&quot;/rootnode/first child&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>  <span class="c1"># grafting an external node into the tree</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">Node</span><span class="p">())</span>  <span class="c1"># grafting an external node into the tree</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">rootnode</span><span class="o">.</span><span class="n">to_texttree</span><span class="p">())</span>
 <span class="go">| The Root Node</span>
 <span class="go">+--| first child</span>
-<span class="go">.  +--| ()</span>
+<span class="go">.  +--|</span>
 <span class="go">+--| child 2</span>
 <span class="go">.  +--| grandchild1</span>
-<span class="go">.  +--| (1, 1)</span>
+<span class="go">.  +--|</span>
 <span class="go">+--| child3</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">References</a><a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li><a class="reference external" href="https://pypi.org/project/vntree/">PyPI</a></li>
 <li><a class="reference external" href="https://github.com/qwilka/vn-tree">GitHub</a></li>
@@ -97,10 +114,11 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#basics">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
 </ul>
 
@@ -108,8 +126,8 @@
   <p class="topless"><a href="index.html"
                         title="previous chapter">vntree documentation</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="api.html"
-                        title="next chapter">API reference</a></p>
+  <p class="topless"><a href="user-guide.html"
+                        title="next chapter">User Guide</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -143,7 +161,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="API reference"
+          <a href="user-guide.html" title="User Guide"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="vntree documentation"

@@ -125,15 +125,19 @@
 <span class="sd">    :param treedict: Dictionary specifying a complete tree.</span>
 <span class="sd">    :type treedict: dict or None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">YAML_setup</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">NodeAttr</span><span class="p">()</span>
+
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treedict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="c1"># copy.deepcopy(data)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">childs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">parent</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
             <span class="n">parent</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -141,8 +145,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.__init__: instance «</span><span class="si">{}</span><span class="s2">» argument «parent» type not valid: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">parent</span><span class="p">)))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">treedict</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">treedict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">from_treedict</span><span class="p">(</span><span class="n">treedict</span><span class="p">)</span>
 
@@ -436,19 +440,19 @@
 
 
 <div class="viewcode-block" id="Node.to_texttree"><a class="viewcode-back" href="../../api.html#vntree.Node.to_texttree">[docs]</a>    <span class="k">def</span> <span class="nf">to_texttree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a text representation of the (sub-)tree rooted at </span>
-<span class="sd">        the current node instance (`self`).</span>
+        <span class="sd">&quot;&quot;&quot;Method returning a text representation of the (sub-)tree  </span>
+<span class="sd">        rooted at the current node instance (`self`).</span>
 
 <span class="sd">        :param indent: the indentation width for each tree level.</span>
 <span class="sd">        :type indent: int</span>
 <span class="sd">        :param func: function returning a string representation for </span>
-<span class="sd">            each node. e.g. `func=lambda n: &quot; {}&quot;.format(n.coord)`</span>
+<span class="sd">            each node. e.g. `func=lambda n: str(n.coord)`</span>
 <span class="sd">            would show the node coordinates. </span>
 <span class="sd">            `func=True` node.name displayed for each node. </span>
 <span class="sd">            `func=False` no node representation, just</span>
 <span class="sd">            the tree structure is displayed.</span>
 <span class="sd">        :type func: function or bool</span>
-<span class="sd">        :returns: a string representation of the sub-tree.</span>
+<span class="sd">        :returns: a string representation of the tree.</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">indent</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">:</span>
@@ -525,18 +529,49 @@
                                 <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">othertree</span><span class="o">.</span><span class="n">to_treedict</span><span class="p">(),</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
                                 <span class="p">)</span><span class="o">.</span><span class="n">ratio</span><span class="p">()</span></div>
 
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setup_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">yamlnode_constructor</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">yamlnode</span><span class="p">)</span> <span class="p">:</span>
             <span class="n">fields</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">construct_mapping</span><span class="p">(</span><span class="n">yamlnode</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span>  <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">fields</span><span class="p">)</span>
-        <span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="o">.</span><span class="n">add_constructor</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="o">+</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">yamlnode_constructor</span><span class="p">)</span>        
+        <span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="o">.</span><span class="n">add_constructor</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="o">+</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">yamlnode_constructor</span><span class="p">)</span>
+       
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">import_yamltree</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yamltree</span><span class="p">):</span>
-        <span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yamltree</span><span class="p">)</span>
+<div class="viewcode-block" id="Node.yaml2tree"><a class="viewcode-back" href="../../api.html#vntree.Node.yaml2tree">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">yaml2tree</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yamltree</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class method that creates a tree from YAML.</span>
+
+<span class="sd">        | # Example yamltree data:</span>
+<span class="sd">        | - !Node &amp;root</span>
+<span class="sd">        |   name: &quot;root node&quot;</span>
+<span class="sd">        |   parent: null</span>
+<span class="sd">        |   data:</span>
+<span class="sd">        |     testpara: 111</span>
+<span class="sd">        | - !Node &amp;child1</span>
+<span class="sd">        |   name: &quot;child node&quot;</span>
+<span class="sd">        |   parent: *root</span>
+<span class="sd">        | - !Node &amp;gc1</span>
+<span class="sd">        |   name: &quot;grand-child node&quot;</span>
+<span class="sd">        |   parent: *child1</span>
+
+<span class="sd">        :param yamltree: a string of YAML describing the nodes in the</span>
+<span class="sd">            tree, or the path to a file containing the data.</span>
+<span class="sd">        :type yamltree: str</span>
+<span class="sd">        :returns: the root node of the tree. </span>
+<span class="sd">        :rtype: Node </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">YAML_setup</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">setup_yaml</span><span class="p">()</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">YAML_setup</span> <span class="o">=</span> <span class="kc">True</span> 
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">yamltree</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yamltree</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="n">yaml_data</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yaml_data</span> <span class="o">=</span> <span class="n">yamltree</span>
+        <span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_data</span><span class="p">)</span>
         <span class="n">yamltree_root</span> <span class="o">=</span> <span class="n">list_of_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">yamltree_root</span></div>
+        <span class="k">return</span> <span class="n">yamltree_root</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -577,6 +612,7 @@
 <h3><a href="../../index.html">Table of Contents</a></h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
 </ul>
 
