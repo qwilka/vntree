@@ -3,7 +3,7 @@ Copyright © 2018-2019 Stephen McEntee
 Licensed under the MIT license. 
 See «vn-tree» LICENSE file for details https://github.com/qwilka/vn-tree/blob/master/LICENSE
 """
-import collections
+#import collections
 import copy
 from difflib import SequenceMatcher
 import json
@@ -11,6 +11,7 @@ import itertools
 import logging
 import os
 import pathlib 
+import pickle
 
 import yaml
 
@@ -38,6 +39,8 @@ class NodeAttr:
         return _value
     def __set__(self, instance, value):
         if self.ns:
+            if self.ns not in instance.data:
+                instance.data[self.ns] = {}
             instance.data[self.ns][self.name] = value
         else:
             instance.data[self.name] = value
@@ -89,11 +92,13 @@ class Node:
     """
     YAML_setup = False
     name = NodeAttr()
+    _vnpkl_fpath = TreeAttr("_vntree_meta")
 
 
     def __init__(self, name=None, parent=None, data=None, treedict=None):
         if data and isinstance(data, dict):
-            self.data = collections.defaultdict(dict, copy.deepcopy(data)) # copy.deepcopy(data)
+            #self.data = collections.defaultdict(dict, copy.deepcopy(data))
+            self.data = copy.deepcopy(data)
         else:
             self.data = {}
         if name:
@@ -114,7 +119,7 @@ class Node:
 
 
     def __str__(self):
-        return "{} coord={} «{}»".format(self.__class__.__name__, self.coord, self.name)
+        return "{} coord={} «{}»".format(self.__class__.__name__, self._coord, self.name)
 
 
     def __iter__(self): 
@@ -172,17 +177,17 @@ class Node:
         return False
 
     @property
-    def nodepath(self):
-        """Attribute indicating the absolute nodepath for this node. 
+    def _path(self):
+        """Attribute indicating the absolute node path for this node. 
         
-        Note that the absolute nodepath starts with a forward slash 
+        Note that the absolute node path starts with a forward slash 
         followed by the root node's name: e.g: 
         `/root.name/child.name/grandchild.name`
-        Warning: it should be noted that use of nodepath assumes  
-        that sibling nodes have unique names. If unique nodepaths
-        cannot be assured, use node attribute «coord» instead.
+        Warning: it should be noted that use of _path assumes  
+        that sibling nodes have unique names. If unique node paths
+        cannot be assured, use node attribute «_coord» instead.
 
-        :returns: The absolute nodepath for this node.
+        :returns: The absolute node path for this node.
         :rtype: str 
         """
         _path = pathlib.PurePosixPath(self.name)
@@ -194,15 +199,15 @@ class Node:
         return _path.as_posix()
 
     @property
-    def coord(self):
+    def _coord(self):
         """Attribute indicating the tree coordinates for this node.
 
         The tree coordinates of a node are expressed as a tuple of the
         indices of the node and its ancestors, for example:
-        A grandchild node with nodepath 
+        A grandchild node with node path 
         `/root.name/root.childs[2].name/root.childs[2].childs[0].name` 
-        would have coord `(2,0)`.
-        The root node coord is an empty tuple: `()`
+        would have coordinates `(2,0)`.
+        The root node _coord is an empty tuple: `()`
 
         :returns: the tree coordinates for this node.
         :rtype: tuple 
@@ -214,6 +219,18 @@ class Node:
             _coord.insert(0, _idx)
             _node = _node.parent
         return tuple(_coord)
+
+
+    @property
+    def _level(self):
+        """Attribute indicating the tree `level` for this node instance.
+
+        Note that the root node is defined as level 1.
+
+        :returns: the node `level`.
+        :rtype: int 
+        """
+        return len(self._coord) + 1
 
 
     def get_data(self, *keys):
@@ -275,7 +292,7 @@ class Node:
 
 
     @property
-    def ancestors(self):
+    def _ancestors(self):
         """Attribute referencing the tree ancestors of the node instance.
 
         :returns: list of node ancestors in sequence, first item is 
@@ -309,30 +326,30 @@ class Node:
         return _childnode
 
 
-    def get_node_by_nodepath(self, nodepath):
-        """Get a node from a nodepath. 
+    def get_node_by_path(self, path):
+        """Get a node from a node path. 
 
         Warning: use of this method assumes that sibling nodes have unique names,
         if this is not assured the `get_node_by_coord` method can be used instead.
 
-        |  Example with absolute nodepath: 
-        |  `node.get_node_by_nodepath('/root.name/child.name/gchild.name')`
-        |  Example with relative nodepath:
-        |  `node.get_node_by_nodepath('child.name/gchild.name')`
+        |  Example with absolute node path: 
+        |  `node.get_node_by_path('/root.name/child.name/gchild.name')`
+        |  Example with relative node path:
+        |  `node.get_node_by_path('child.name/gchild.name')`
 
-        :param nodepath: the absolute nodepath, or the nodepath relative 
+        :param path: the absolute node path, or the node path relative 
             to the current node instance.
-        :type nodepath: str
-        :returns: the node corresponding to `nodepath`.
+        :type path: str
+        :returns: the node corresponding to `path`.
         :rtype: Node or None
         """
-        if nodepath==".":
+        if path==".":
             return self
-        elif nodepath.lstrip().startswith((".", "./")) or not isinstance(nodepath, str):
-            logger.warning("%s.get_node_by_nodepath: arg «nodepath»=«%s», not correctly specified." % (self.__class__.__name__, nodepath))
+        elif path.lstrip().startswith((".", "./")) or not isinstance(path, str):
+            logger.warning("%s.get_node_by_path: arg «path»=«%s», not correctly specified." % (self.__class__.__name__, path))
             return None
-        _pathlist = list(filter(None, nodepath.split("/")) ) # remove blank strings
-        if nodepath.startswith("/"):
+        _pathlist = list(filter(None, path.split("/")) ) # remove blank strings
+        if path.startswith("/"):
             _node = self._root  
             _pathlist.pop(0)  # remove rootnode name
         else:
@@ -340,7 +357,7 @@ class Node:
         for _nodename in _pathlist:
             _node = _node.get_child_by_name(_nodename)
             if _node is None:
-                logger.warning("%s.get_node_by_nodepath: node«%s», arg «nodepath»=«%s», cannot find node." % (self.__class__.__name__, self.name, nodepath))
+                logger.warning("%s.get_node_by_path: node«%s», arg `path`=«%s», cannot find node." % (self.__class__.__name__, self.name, path))
                 return None
         return _node
 
@@ -393,7 +410,7 @@ class Node:
         if decend:
             traversal = self
         else:
-            traversal = self.ancestors
+            traversal = self._ancestors
         for _node in traversal:
             _val = _node.get_data(*keys)
             if _val == value:
@@ -408,7 +425,7 @@ class Node:
         :param indent: the indentation width for each tree level.
         :type indent: int
         :param func: function returning a string representation for 
-            each node. e.g. `func=lambda n: str(n.coord)`
+            each node. e.g. `func=lambda n: str(n._coord)`
             would show the node coordinates. 
             `func=True` node.name displayed for each node. 
             `func=False` no node representation, just
@@ -422,9 +439,11 @@ class Node:
         if func is True:  # default func prints node.name
             func = lambda n: " {}".format(n.name)
         _text = ""
-        local_root_level = len(self.ancestors) 
+        #local_root_level = len(self.ancestors)
+        local_root_level = self._level 
         for node in self: 
-            level = len(node.ancestors) - local_root_level
+            #level = len(node.ancestors) - local_root_level
+            level = node._level - local_root_level
             if level>0:
                 _text += ("." + " "*(indent-1))*(level-1) + "+" + "-"*(indent-1)
             _text += "|"
@@ -436,7 +455,8 @@ class Node:
 
     def from_treedict(self, treedict):
         if "data" in treedict:
-            self.data = collections.defaultdict(dict, treedict["data"])
+            #self.data = collections.defaultdict(dict, treedict["data"])
+            self.data = copy.deepcopy(treedict["data"])
         for key, val in treedict.items():
             if key in ["parent", "childs", "data"]:
                 continue
@@ -446,9 +466,11 @@ class Node:
                 #self.childs.append( self.__class__(parent=self, treedict=_childdict) )
                 self.__class__(parent=self, treedict=_childdict)
 
-    def to_treedict(self, recursive=True):
+    def to_treedict(self, recursive=True, vntree_meta=True):
         # NOTE: replace vars(self) with self.__dict__ ( and self.__class__.__dict__ ?)
         _dct = {k:v for k, v in vars(self).items() if k not in ["parent", "childs"]}
+        if not vntree_meta and "_vntree_meta" in _dct["data"]:
+            _dct["data"].pop("_vntree_meta")
         if recursive and self.childs:
             _dct["childs"] = []
             for _child in self.childs:
@@ -474,7 +496,7 @@ class Node:
     #         self.from_treedict(treedict=_treedict)
     #         return True
 
-    def tree_compare(self, othertree):
+    def tree_compare(self, othertree, vntree_meta=False):
         """Compare the (sub-)tree rooted at `self` with another tree.
 
         `tree_compare` converts the trees being compared into JSON string
@@ -483,13 +505,65 @@ class Node:
 
         :param othertree: the other tree for comparison.
         :type othertree: Node
+        :param vntree_meta: include private vntree metadata in comparison.
+        :type vntree_meta: bool
         :returns: similarity of the trees as a number between 0 and 1. 
         :rtype: float 
         """
         return SequenceMatcher(None, 
-                                json.dumps(self.to_treedict(), default=str), 
-                                json.dumps(othertree.to_treedict(), default=str)
-                                ).ratio()
+                json.dumps(self.to_treedict(vntree_meta=vntree_meta), default=str), 
+                json.dumps(othertree.to_treedict(vntree_meta=vntree_meta), default=str)
+                ).ratio()
+
+
+    def savefile(self, filepath=None):
+        """Save (dump) the tree in a pickle file.
+
+        Note that this method saves the complete tree even when invoked on
+        a non-root node.
+        It is recommended to use the extension `.vnpkl` for this type of file.
+
+        :param filepath: the file path for the pickle file. 
+            If `filepath=None` use `self._vnpkl_fpath` attribute, if set.
+        :type filepath: str or None        
+        :returns: `True` if successful. 
+        :rtype: bool
+        """
+        if filepath:
+            self._vnpkl_fpath = os.path.abspath(filepath)
+        # if not _pfpath:
+        #     logger.error("%s.save: «%s» file path «%s» not valid." % (self.__class__.__name__, self.name, _pfpath))
+        #     return False
+        try:
+            with open(self._vnpkl_fpath, "wb") as pf:
+                pickle.dump(self._root.to_treedict(), pf) 
+        except Exception as err:
+            logger.error("%s.savefile: arg `filepath`=«%s» `self._vnpkl_fpath`=«%s» error: %s" % (self.__class__.__name__, filepath, self._vnpkl_fpath, err))
+            return False
+        return True       
+
+
+    @classmethod
+    def openfile(cls, filepath):
+        """Class method that opens (load) a vntree pickle file.
+
+        :param filepath: the file path for the pickle file. 
+        :type filepath: str         
+        :returns: root node of tree or `False` if failure. 
+        :rtype: Node or bool
+        """
+        if not os.path.isfile(filepath):
+            logger.error("%s.openfile: arg `filepath`=«%s» not valid." % (cls.__name__, filepath))
+            return False
+        try:
+            with open(filepath, "rb") as pf:
+                pkldata = pickle.load(pf)
+            rootnode = cls(treedict=pkldata)
+            rootnode._vnpkl_fpath = os.path.abspath(filepath)
+        except Exception as err:
+            logger.error("%s.openfile: data in file «%s» not valid: %s" % (cls.__name__, filepath, err))
+            return False
+        return rootnode            
 
 
     @classmethod

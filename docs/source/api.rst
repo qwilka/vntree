@@ -9,6 +9,7 @@ Node
 ---------
 .. autoclass:: vntree.Node
    :members:
+   :private-members:
 
 NodeAttr
 ---------

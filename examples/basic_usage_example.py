@@ -6,7 +6,9 @@ example1 = False
 example2 = False
 treedict_example = False
 JSON_example = False
-YAML_example = True
+YAML_example = False
+top_down_traversal = True
+bottom_up_traversal = False
 
 if example1:
     rootnode = Node("root-node")    # the root node has no parent
@@ -114,4 +116,53 @@ if YAML_example:
     #Node.setup_yaml()
     ytree = Node.yaml2tree(yamltree)
     print(ytree.to_texttree())
+
+
+if top_down_traversal:
+    tdict = {
+        "name": "ROOT",
+        "data": {
+            "meta1": 1234,
+        },
+        "childs": [
+            {
+                "name": "child1",
+                "childs": [{"name":"gc1"}, {"name":"gc2"}],
+            },
+            {
+                "name": "child2",
+                "data": {"test1": "this is test data"},
+                "childs": [{"name":"another gc", "childs":[{"name":"ggc1"}]} ],
+            },
+        ]
+    }
+    rootnode = Node(treedict=tdict)
+    print(rootnode.to_texttree())
+    for n in rootnode:
+        print(f"name=«{n.name}» coord={n._coord} level={n._level}")
+
+
+if bottom_up_traversal:
+    tdict = {
+        "name": "ROOT",
+        "data": {
+            "meta1": 1234,
+        },
+        "childs": [
+            {
+                "name": "child1",
+                "childs": [{"name":"gc1"}, {"name":"gc2"}],
+            },
+            {
+                "name": "child2",
+                "data": {"test1": "this is test data"},
+                "childs": [{"name":"another gc", "childs":[{"name":"ggc1"}]} ],
+            },
+        ]
+    }
+    rootnode = Node(treedict=tdict)
+    print(rootnode.to_texttree())
+    for n in reversed(rootnode):
+        print(f"name=«{n.name}» coord={n._coord} level={n._level}")
+
 

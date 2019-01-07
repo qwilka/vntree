@@ -53,6 +53,16 @@
 <li><a class="reference internal" href="#with-yaml" id="id5">with YAML</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#traverse-tree" id="id6">Traverse tree</a><ul>
+<li><a class="reference internal" href="#top-down-traversal" id="id7">top-down traversal</a></li>
+<li><a class="reference internal" href="#bottom-up-traversal" id="id8">bottom-up traversal</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#persistence" id="id9">Persistence</a><ul>
+<li><a class="reference internal" href="#save-tree" id="id10">Save tree</a></li>
+<li><a class="reference internal" href="#open-tree-file" id="id11">Open tree file</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="section" id="the-node-class">
@@ -205,6 +215,94 @@ the <cite>yamltree</cite> argument specifies the path to the YAML file:</p>
 </div>
 </div>
 </div>
+<div class="section" id="traverse-tree">
+<h2><a class="toc-backref" href="#id6">Traverse tree</a><a class="headerlink" href="#traverse-tree" title="Permalink to this headline">¶</a></h2>
+<p>Each node in a <cite>vntree</cite> can act as a generator, facilitating traveral of
+the (sub-)tree rooted at the node instance.</p>
+<div class="section" id="top-down-traversal">
+<h3><a class="toc-backref" href="#id7">top-down traversal</a><a class="headerlink" href="#top-down-traversal" title="Permalink to this headline">¶</a></h3>
+<p>For top-down tree traversal (starts at the root node),
+apply the root node directly in a <cite>for</cite> loop. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">rootnode</span><span class="o">.</span><span class="n">to_texttree</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">rootnode</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;name=«{n.name}» coord={n._coord} level={n._level}&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This code gives output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>| ROOT
++--| child1
+.  +--| gc1
+.  +--| gc2
++--| child2
+.  +--| another gc
+.  .  +--| ggc1
+
+name=«ROOT» coord=() level=1
+name=«child1» coord=(0,) level=2
+name=«gc1» coord=(0, 0) level=3
+name=«gc2» coord=(0, 1) level=3
+name=«child2» coord=(1,) level=2
+name=«another gc» coord=(1, 0) level=3
+name=«ggc1» coord=(1, 0, 0) level=4
+</pre></div>
+</div>
+</div>
+<div class="section" id="bottom-up-traversal">
+<h3><a class="toc-backref" href="#id8">bottom-up traversal</a><a class="headerlink" href="#bottom-up-traversal" title="Permalink to this headline">¶</a></h3>
+<p>For bottom-up tree traversal,
+apply the Python built-in
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#reversed">reversed</a>
+function to the root node in a <cite>for</cite> loop. For an example using the
+same tree as the top-down traversal example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">rootnode</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;name=«{n.name}» coord={n._coord} level={n._level}&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This code gives output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>name=«gc1» coord=(0, 0) level=3
+name=«gc2» coord=(0, 1) level=3
+name=«child1» coord=(0,) level=2
+name=«ggc1» coord=(1, 0, 0) level=4
+name=«another gc» coord=(1, 0) level=3
+name=«child2» coord=(1,) level=2
+name=«ROOT» coord=() level=1
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="persistence">
+<h2><a class="toc-backref" href="#id9">Persistence</a><a class="headerlink" href="#persistence" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="save-tree">
+<h3><a class="toc-backref" href="#id10">Save tree</a><a class="headerlink" href="#save-tree" title="Permalink to this headline">¶</a></h3>
+<p>A tree can be saved as a Python
+<a class="reference external" href="https://docs.python.org/3/library/pickle.html">pickle</a>
+file.
+For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rootnode</span><span class="o">.</span><span class="n">savefile</span><span class="p">(</span><span class="s2">&quot;mytree.vnpkl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notes:</p>
+<ol class="arabic simple">
+<li>It is recommended to use the extension <cite>.vnpkl</cite> for this type of file.</li>
+<li>Invoking <cite>savefile</cite> on a node instance saves the complete tree.</li>
+<li><cite>savefile</cite> sets a vntree metadata TreeAttr attribute (<cite>_vnpkl_fpath</cite>) that contains the full path of the pickle file.</li>
+<li>After the first <cite>savefile</cite> invocation it is not necessary to specify argument <cite>filepath</cite> again, attribute <cite>_vnpkl_fpath</cite> will be used instead.</li>
+</ol>
+</div>
+<div class="section" id="open-tree-file">
+<h3><a class="toc-backref" href="#id11">Open tree file</a><a class="headerlink" href="#open-tree-file" title="Permalink to this headline">¶</a></h3>
+<p>A tree can be loaded from a <cite>vnpkl</cite> file by using the class method
+<cite>openfile</cite> as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rootnode</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">openfile</span><span class="p">(</span><span class="s2">&quot;mytree.vnpkl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notes:</p>
+<ol class="arabic simple">
+<li><cite>openfile</cite> is invoked on the class: <cite>Node.openfile(filepath)</cite></li>
+<li><cite>openfile</cite> re-sets the vntree metadata TreeAttr attribute <cite>_vnpkl_fpath</cite> to the current file path.</li>
+</ol>
+</div>
+</div>
 </div>
 
 
@@ -219,6 +317,8 @@ the <cite>yamltree</cite> argument specifies the path to the YAML file:</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#the-node-class">The Node class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-trees">Creating trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#traverse-tree">Traverse tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#persistence">Persistence</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>

@@ -168,3 +168,102 @@ the `yamltree` argument specifies the path to the YAML file:
 
     ytree = Node.yaml2tree("/home/stephen/tree-nodes.yaml")
 
+
+Traverse tree
+--------------
+
+Each node in a `vntree` can act as a generator, facilitating traveral of
+the (sub-)tree rooted at the node instance.
+
+top-down traversal
+^^^^^^^^^^^^^^^^^^
+
+For top-down tree traversal (starts at the root node),
+apply the root node directly in a `for` loop. For example:
+
+.. code-block:: python
+
+    print(rootnode.to_texttree())
+    for n in rootnode:
+        print(f"name=«{n.name}» coord={n._coord} level={n._level}")
+
+This code gives output::
+
+    | ROOT
+    +--| child1
+    .  +--| gc1
+    .  +--| gc2
+    +--| child2
+    .  +--| another gc
+    .  .  +--| ggc1
+
+    name=«ROOT» coord=() level=1
+    name=«child1» coord=(0,) level=2
+    name=«gc1» coord=(0, 0) level=3
+    name=«gc2» coord=(0, 1) level=3
+    name=«child2» coord=(1,) level=2
+    name=«another gc» coord=(1, 0) level=3
+    name=«ggc1» coord=(1, 0, 0) level=4
+
+
+bottom-up traversal
+^^^^^^^^^^^^^^^^^^^
+
+For bottom-up tree traversal,
+apply the Python built-in
+`reversed <https://docs.python.org/3/library/functions.html#reversed>`_ 
+function to the root node in a `for` loop. For an example using the
+same tree as the top-down traversal example:
+
+.. code-block:: python
+
+    for n in reversed(rootnode):
+        print(f"name=«{n.name}» coord={n._coord} level={n._level}")
+
+This code gives output::
+
+    name=«gc1» coord=(0, 0) level=3
+    name=«gc2» coord=(0, 1) level=3
+    name=«child1» coord=(0,) level=2
+    name=«ggc1» coord=(1, 0, 0) level=4
+    name=«another gc» coord=(1, 0) level=3
+    name=«child2» coord=(1,) level=2
+    name=«ROOT» coord=() level=1
+
+
+Persistence
+--------------
+
+Save tree
+^^^^^^^^^^^^^^^^^^
+
+A tree can be saved as a Python
+`pickle <https://docs.python.org/3/library/pickle.html>`_
+file. 
+For example:
+
+.. code-block:: python
+
+    rootnode.savefile("mytree.vnpkl")
+
+Notes:
+
+#. It is recommended to use the extension `.vnpkl` for this type of file.
+#. Invoking `savefile` on a node instance saves the complete tree.
+#. `savefile` sets a vntree metadata TreeAttr attribute (`_vnpkl_fpath`) that contains the full path of the pickle file.
+#. After the first `savefile` invocation it is not necessary to specify argument `filepath` again, attribute `_vnpkl_fpath` will be used instead.
+
+Open tree file
+^^^^^^^^^^^^^^^^^^
+
+A tree can be loaded from a `vnpkl` file by using the class method
+`openfile` as follows:
+
+.. code-block:: python
+
+    rootnode = Node.openfile("mytree.vnpkl")
+
+Notes:
+
+#. `openfile` is invoked on the class: `Node.openfile(filepath)`
+#. `openfile` re-sets the vntree metadata TreeAttr attribute `_vnpkl_fpath` to the current file path.
