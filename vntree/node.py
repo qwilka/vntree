@@ -95,7 +95,8 @@ class Node:
     _vnpkl_fpath = TreeAttr("_vntree_meta")
 
 
-    def __init__(self, name=None, parent=None, data=None, treedict=None):
+    def __init__(self, name=None, parent=None, data=None, 
+                treedict=None, vnpkl_fpath=None):
         if data and isinstance(data, dict):
             #self.data = collections.defaultdict(dict, copy.deepcopy(data))
             self.data = copy.deepcopy(data)
@@ -116,6 +117,8 @@ class Node:
             self.name = str(name(self))
         if treedict and isinstance(treedict, dict):
             self.from_treedict(treedict)
+        if vnpkl_fpath and isinstance(vnpkl_fpath, str):
+            self._vnpkl_fpath = vnpkl_fpath
 
 
     def __str__(self):
