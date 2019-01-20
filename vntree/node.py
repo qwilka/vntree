@@ -28,11 +28,12 @@ class NodeAttr:
                 `ns=None` for top-level attributes.
     :type ns: str or None
     """
-    def __init__(self, ns=None):
-        self.ns = ns    
+    def __init__(self, ns=None, initial=None):
+        self.ns = ns
+        self.initial = initial  
     def __get__(self, instance, owner):
         if self.ns in instance.data and isinstance(instance.data[self.ns], dict):
-            _value = instance.data[self.ns].get(self.name, None)
+            _value = instance.data[self.ns].get(self.name, self.initial)
         else:
             #logger.error("%s.__get__ «%s»; ns «%s» not in %s" % (self.__class__.__name__, self.name, self.ns, instance))
             _value = instance.data.get(self.name, None)
