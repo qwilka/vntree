@@ -40,7 +40,6 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.githubpages',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
 ]
@@ -67,7 +66,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -158,7 +157,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'vntree', 'vntree Documentation',
-     author, 'vntree', 'One line description of project.',
+     author, 'vntree', 'A simple tree data structure in Python.',
      'Miscellaneous'),
 ]
 
@@ -182,6 +181,8 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+
+# -- Options for intersphinx extension ---------------------------------------
 intersphinx_mapping = {
     'python': ('http://docs.python.org/3', None),
 }

@@ -143,13 +143,22 @@ class Node:
 
         :param node: the child node instance.
         :type node: Node
-        :returns: True if successful.   
+        :returns: The new child node instance.   
+        :rtype: Node 
         """
         if not issubclass(node.__class__, Node):
             raise TypeError("{}.add_child: arg «node»=«{}», type {} not valid.".format(self.__class__.__name__, node, type(node)))
         self.childs.append(node)
         node.parent = self
-        return True    
+        return node    
+
+    def copy(self):
+        """Return a deep copy of the sub-tree rooted at this node instance.
+
+        :returns: Copy of the sub-tree rooted at this node instance.
+        :rtype: Node 
+        """
+        return copy.deepcopy(self)
 
     def remove_child(self, idx=None, *, name=None, node=None):
         """Remove a child node from the current node instance.

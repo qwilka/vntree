@@ -52,7 +52,7 @@
 <h2><a class="toc-backref" href="#id5">Node</a><a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="vntree.Node">
-<em class="property">class </em><code class="descclassname">vntree.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>name=None</em>, <em>parent=None</em>, <em>data=None</em>, <em>treedict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vntree.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>name=None</em>, <em>parent=None</em>, <em>data=None</em>, <em>treedict=None</em>, <em>vnpkl_fpath=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for creating vntree nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -172,7 +172,25 @@ cannot be assured, use node attribute «_coord» instead.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="#vntree.Node" title="vntree.Node"><em>Node</em></a>) – the child node instance.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if successful.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The new child node instance.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#vntree.Node" title="vntree.Node">Node</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vntree.Node.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a deep copy of the sub-tree rooted at this node instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Copy of the sub-tree rooted at this node instance.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#vntree.Node" title="vntree.Node">Node</a></td>
 </tr>
 </tbody>
 </table>
@@ -491,7 +509,7 @@ tree, or the path to a file containing the data.</td>
 <h2><a class="toc-backref" href="#id6">NodeAttr</a><a class="headerlink" href="#nodeattr" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="vntree.NodeAttr">
-<em class="property">class </em><code class="descclassname">vntree.</code><code class="descname">NodeAttr</code><span class="sig-paren">(</span><em>ns=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#NodeAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.NodeAttr" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vntree.</code><code class="descname">NodeAttr</code><span class="sig-paren">(</span><em>ns=None</em>, <em>initial=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#NodeAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.NodeAttr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Descriptor class for node attributes.</p>
 <p>NodeAttr attributes are stored in the node instance <cite>data</cite> dictionary. 
 This facilitates serialization and persistance of the tree.</p>
