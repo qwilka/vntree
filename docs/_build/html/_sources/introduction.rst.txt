@@ -57,5 +57,5 @@ True
 References
 ----------
 
-#. `PyPI <https://pypi.org/project/vntree/>`_
-#. `GitHub <https://github.com/qwilka/vn-tree>`_
+#. :py:mod:`vntree` on ``PyPI``  https://pypi.org/project/vntree/
+#. :py:mod:`vntree` on ``GitHub``  https://github.com/qwilka/vn-tree

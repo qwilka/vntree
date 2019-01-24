@@ -431,7 +431,7 @@ class Node:
         return None
 
 
-    def to_texttree(self, indent=3, func=True):
+    def to_texttree(self, indent=3, func=True, symbol='ascii'):
         """Method returning a text representation of the (sub-)tree  
         rooted at the current node instance (`self`).
 
@@ -444,24 +444,64 @@ class Node:
             `func=False` no node representation, just
             the tree structure is displayed.
         :type func: function or bool
+        :param symbol: tuple of tree symbol characters.
+            `None` or 'ascii' gives a preformed ascii tree, equivalent to tuple :code:`(|, +, |, |, |, -, .)`.
+            'box' preformed with box-drawing characters, equivalent to tuple :code:`(┬, └, ┬, ├, └, ─, ⋅)`.
+            'unicode' preformed with unicode characters.
+        :type symbol: tuple or str or None
         :returns: a string representation of the tree.
         :rtype: str
         """
         if indent<2:
             indent=2
         if func is True:  # default func prints node.name
-            func = lambda n: " {}".format(n.name)
+            func = lambda n: "{}".format(n.name)
+        if isinstance(symbol, (list, tuple)):
+            s_root, s_branch, s_spar, s_fnode  = symbol
+        elif symbol=="unicode":
+            # ┬ └ ┬ ├ └ ─ ⋅
+            s_root, s_branch, s_fnode, s_mnode, s_lnode, s_spar, s_level  = (
+                "\u252c", "\u2514", "\u252c", "\u251c", "\u2514", "\u2500", "\u22c5")
+        elif symbol=="box": # https://en.wikipedia.org/wiki/Box-drawing_character
+            # ┬ └ ┬ ├ └ ─ ⋅
+            s_root, s_branch, s_fnode, s_mnode, s_lnode, s_spar, s_level  = (
+                "\u252c", "\u2514", "\u252c", "\u251c", "\u2514", "\u2500", "\u22c5")
+        else:
+            s_root, s_branch, s_fnode, s_mnode, s_lnode, s_spar, s_level  = (
+                "|", "+", "|", "|", "|", "-", ".")
         _text = ""
         #local_root_level = len(self.ancestors)
         local_root_level = self._level 
-        for node in self: 
+        for _n in self: 
             #level = len(node.ancestors) - local_root_level
-            level = node._level - local_root_level
-            if level>0:
-                _text += ("." + " "*(indent-1))*(level-1) + "+" + "-"*(indent-1)
-            _text += "|"
+            level = _n._level - local_root_level
+            if level==0:
+                _text += s_root
+            elif _n.parent.childs[0] == _n and len(_n.parent.childs)>1:   # first child
+                #s_spar="f"
+                _text += (  (s_level + " "*(indent-1))*(level-1) 
+                            + s_branch 
+                            + s_spar*(indent-1) 
+                            + s_fnode)
+            elif _n.parent.childs[-1] == _n and len(_n.childs)==0:   # last child, no children
+                #s_spar="l"
+                _text += ( (s_level + " "*(indent-1))*(level) 
+                            + s_lnode )
+            elif _n.parent.childs[-1] == _n:   # last child, has children
+                #s_spar="l"
+                _text += ( (s_level + " "*(indent-1))*(level) 
+                            + s_mnode )
+                            #+ s_spar*(indent-1) )
+            # elif level>0:
+            #     _text += (s_level + " "*(indent-1))*(level-1) + s_branch + s_spar*(indent-1)
+            else:
+                #_text += s_fnode
+                #s_spar="m"
+                _text += ( (s_level + " "*(indent-1))*(level) 
+                            + s_mnode )
+                            #+ s_spar*(indent-1) )
             if func and callable(func):
-                _text += func(node)
+                _text += func(_n)
             _text += "\n"
         return _text
 

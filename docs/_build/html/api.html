@@ -406,7 +406,7 @@ If <cite>filepath=None</cite> use <cite>self._vnpkl_fpath</cite> attribute, if s
 
 <dl class="method">
 <dt id="vntree.Node.to_texttree">
-<code class="descname">to_texttree</code><span class="sig-paren">(</span><em>indent=3</em>, <em>func=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.to_texttree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.to_texttree" title="Permalink to this definition">¶</a></dt>
+<code class="descname">to_texttree</code><span class="sig-paren">(</span><em>indent=3</em>, <em>func=True</em>, <em>symbol='ascii'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vntree/node.html#Node.to_texttree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vntree.Node.to_texttree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method returning a text representation of the (sub-)tree  
 rooted at the current node instance (<cite>self</cite>).</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -421,6 +421,10 @@ would show the node coordinates.
 <cite>func=True</cite> node.name displayed for each node. 
 <cite>func=False</cite> no node representation, just
 the tree structure is displayed.</li>
+<li><strong>symbol</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – tuple of tree symbol characters.
+<cite>None</cite> or ‘ascii’ gives a preformed ascii tree, equivalent to tuple <code class="code docutils literal notranslate"><span class="pre">(|,</span> <span class="pre">+,</span> <span class="pre">|,</span> <span class="pre">|,</span> <span class="pre">|,</span> <span class="pre">-,</span> <span class="pre">.)</span></code>.
+‘box’ preformed with box-drawing characters, equivalent to tuple <code class="code docutils literal notranslate"><span class="pre">(┬,</span> <span class="pre">└,</span> <span class="pre">┬,</span> <span class="pre">├,</span> <span class="pre">└,</span> <span class="pre">─,</span> <span class="pre">⋅)</span></code>.
+‘unicode’ preformed with unicode characters.</li>
 </ul>
 </td>
 </tr>

@@ -2,20 +2,29 @@ import json
 
 from vntree import Node
 
-example1 = False
+example1 = True
 example2 = False
 treedict_example = False
 JSON_example = False
 YAML_example = False
-top_down_traversal = True
+top_down_traversal = False
 bottom_up_traversal = False
 
 if example1:
     rootnode = Node("root-node")    # the root node has no parent
     print(f"The name of the root node is «{rootnode.name}»")
     Node("The first child", rootnode)
+    Node("anon child", rootnode)
+    Node("2nd child", rootnode)
+    Node("anon child", rootnode)
+    Node("3rd child", rootnode)
     c1 = rootnode.childs[0]
     gc1 = Node("first grand-child", c1)
+    Node("2nd grand-child", c1)
+    gc3 = Node("3rd grand-child", c1)
+    Node("1st great grand-child", gc3)
+    Node("great grand-child", gc3)
+    Node("great grand-child", gc3)
     print(rootnode.to_texttree())
 
 if example2:
@@ -25,7 +34,7 @@ if example2:
     Node("child3", rootnode)            # create 3rd child node
     g1 = Node("grandchild1", c2)        # child of node «child 2»
     Node(parent=c2)       # another grandchild node, name not specified
-    c1 = rootnode.get_node_by_nodepath("/rootnode/first child")
+    c1 = rootnode.get_node_by_path("/rootnode/first child")
     c1.add_child(Node())  # grafting an external node into the tree
     print(rootnode.to_texttree())
 
