@@ -12,6 +12,7 @@ import logging
 import os
 import pathlib 
 import pickle
+import textwrap
 
 import yaml
 
@@ -625,6 +626,10 @@ class Node:
             fields = loader.construct_mapping(yamlnode, deep=True)
             return  cls(**fields)
         yaml.SafeLoader.add_constructor('!'+cls.__name__, yamlnode_constructor)
+        # def yamlnode_representer(dumper, data):
+        #     rep = '!Node'
+        #     return dumper.represent_scalar('!Node', '%sd%s' % data)
+        # yaml.add_representer(cls, yamlnode_representer)
        
 
     @classmethod
@@ -661,6 +666,40 @@ class Node:
         list_of_nodes = yaml.safe_load(yaml_data)
         yamltree_root = list_of_nodes[0]
         return yamltree_root
+
+
+    def tree2yaml(self):
+        # if not self.__class__.YAML_setup:
+        #     self.__class__.setup_yaml()
+        #     self.__class__.YAML_setup = True 
+        def make_anchor(node):
+            # if node._root is node:
+            #     anchor = "root"
+            # else:
+            anchor = "coord"
+            for _c in node._coord:
+                anchor += "-" + str(_c)
+            return anchor
+        yltree = "# dummy \n"
+        for _n in self:
+            _ncopy = _n.copy()
+            delattr(_ncopy, "childs")
+            delattr(_ncopy, "parent")
+            # if _n.parent:
+            #     _ncopy.parent = "*" + make_anchor(_n.parent)
+            _yl = yaml.dump(_ncopy, default_flow_style=False)
+            _n_yl = '!'+_n.__class__.__name__  + " &" + make_anchor(_n)
+            if _n.parent:
+                _n_yl += "\nparent: " + "*" + make_anchor(_n.parent)
+            # else:
+            #     _n_yl += "\n"
+            _n_yl += _yl[_yl.index("\n"):]
+            yltree += _n_yl
+        yltree = textwrap.indent(yltree, "  ")
+        yltree = yltree.strip()
+        yltree = yltree.replace("\n  !", "\n- !")
+        return yltree
+
 
 
 if __name__ == "__main__":

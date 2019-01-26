@@ -13,7 +13,7 @@ bottom_up_traversal = False
 if example1:
     rootnode = Node("root-node")    # the root node has no parent
     print(f"The name of the root node is «{rootnode.name}»")
-    Node("The first child", rootnode)
+    Node("The first child", rootnode, data={"test1": "this is test data"})
     Node("anon child", rootnode)
     Node("2nd child", rootnode)
     Node("anon child", rootnode)

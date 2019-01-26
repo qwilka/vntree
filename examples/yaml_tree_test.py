@@ -52,4 +52,4 @@ yamltree = """
 rootnode = Node.yaml2tree(yamltree)
 
 print(rootnode.to_texttree(func=False )) # func=False supress printing node names
-print(rootnode.to_texttree(func=lambda n: "{}, coord={}".format(n.name, n.coord)) )
+print(rootnode.to_texttree(func=lambda n: "{}, coord={}".format(n.name, n._coord)) )
