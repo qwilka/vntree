@@ -14,9 +14,15 @@ import pathlib
 import pickle
 import textwrap
 
-import yaml
 
 logger = logging.getLogger(__name__)
+
+try:
+    import yaml
+    yaml_imported = True
+except ImportError as err:
+    logger.warning("PyYAML not installed (see https://pyyaml.org/); %s" % (err,) )
+    yaml_imported = False
 
 
 class NodeAttr:
@@ -456,7 +462,7 @@ class Node:
         if indent<2:
             indent=2
         if func is True:  # default func prints node.name
-            func = lambda n: "{}".format(n.name)
+            func = lambda n: " {}".format(n.name)
         if isinstance(symbol, (list, tuple)):
             s_root, s_branch, s_spar, s_fnode  = symbol
         elif symbol=="unicode":

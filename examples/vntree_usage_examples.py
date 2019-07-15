@@ -1,4 +1,27 @@
+import argparse
 import json
+import logging
+
+aparser = argparse.ArgumentParser()
+aparser.add_argument("case", help="select example case", 
+    nargs='?', default="basic1",
+    choices=["basic1", "basic2", "treedict", "JSON", "YAML",
+    "top-down", "bottom-up"])
+aparser.add_argument("--logging", help="select logging level", 
+    default="ERROR",
+    choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+args = aparser.parse_args()
+
+logger = logging.getLogger()
+try:
+    logging_lvl = getattr(logging, args.logging)
+except AttributeError:
+    logging_lvl = logging.ERROR
+logger.setLevel(logging_lvl)
+lh = logging.StreamHandler()
+formatter = logging.Formatter('%(levelname)s|%(name)s|%(message)s')
+lh.setFormatter(formatter)
+logger.addHandler(lh)
 
 from vntree import Node
 
@@ -10,7 +33,9 @@ YAML_example = False
 top_down_traversal = False
 bottom_up_traversal = False
 
-if example1:
+print(f"vntree usage example «{args.case}»:")
+#if example1:
+if args.case == "basic1":
     rootnode = Node("root-node")    # the root node has no parent
     print(f"The name of the root node is «{rootnode.name}»")
     Node("The first child", rootnode, data={"test1": "this is test data"})
@@ -27,7 +52,7 @@ if example1:
     Node("great grand-child", gc3)
     print(rootnode.to_texttree())
 
-if example2:
+elif args.case == "basic2":
     rootnode = Node("The Root Node")    # the root node has no parent
     Node("first child", rootnode)       # create a child node
     c2 = Node("child 2", rootnode)      # create another child node
@@ -38,7 +63,8 @@ if example2:
     c1.add_child(Node())  # grafting an external node into the tree
     print(rootnode.to_texttree())
 
-if treedict_example:
+#if treedict_example:
+elif args.case == "treedict":
     # create a tree from a treedict
     tdict = {
         "name": "ROOT",
@@ -60,7 +86,8 @@ if treedict_example:
     rootnode = Node(treedict=tdict)
     print(rootnode.to_texttree())
 
-if JSON_example:
+#if JSON_example:
+elif args.case == "JSON":
     # tree from JSON (for convenience, start by creating a tree from treedict)
     tdict = {
         "name": "ROOT",
@@ -94,7 +121,8 @@ if JSON_example:
     tcomp = newtree.tree_compare(origtree)
     print("Similarity between origtree and newtree: ", tcomp)
 
-if YAML_example:
+#if YAML_example:
+elif args.case == "YAML":
     # tree from YAML
     yamltree = """
 - !Node &root
@@ -127,7 +155,8 @@ if YAML_example:
     print(ytree.to_texttree())
 
 
-if top_down_traversal:
+#if top_down_traversal:
+elif args.case == "top-down":
     tdict = {
         "name": "ROOT",
         "data": {
@@ -146,12 +175,13 @@ if top_down_traversal:
         ]
     }
     rootnode = Node(treedict=tdict)
-    print(rootnode.to_texttree())
-    for n in rootnode:
-        print(f"name=«{n.name}» coord={n._coord} level={n._level}")
+    print(f"using example tree:\n{rootnode.to_texttree()}")
+    for ii, n in enumerate(rootnode):
+        print(f"node{ii} name=«{n.name}» coord={n._coord} level={n._level}")
 
 
-if bottom_up_traversal:
+#if bottom_up_traversal:
+elif args.case == "bottom-up":
     tdict = {
         "name": "ROOT",
         "data": {
@@ -170,8 +200,10 @@ if bottom_up_traversal:
         ]
     }
     rootnode = Node(treedict=tdict)
-    print(rootnode.to_texttree())
-    for n in reversed(rootnode):
-        print(f"name=«{n.name}» coord={n._coord} level={n._level}")
+    print(f"using example tree:\n{rootnode.to_texttree()}")
+    for ii, n in enumerate(reversed(rootnode)):
+        print(f"node{ii} name=«{n.name}» coord={n._coord} level={n._level}")
 
 
+# if __name__ == "__main__":
+#     pass

@@ -1,41 +1,45 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>User Guide &#8212; vntree  documentation</title>
-    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/better.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API reference" href="api.html" />
-    <link rel="prev" title="Introduction" href="introduction.html" /> 
+    <link rel="prev" title="Introduction" href="introduction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="api.html" title="API reference"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="introduction.html" title="Introduction"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vntree  documentation</a> &#187;</li> 
-      </ul>
-    </div>  
+    <header id="pageheader"><h1><a href="index.html ">
+        vntree  documentation
+    </a></h1></header>
+  <div class="related top">
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="introduction.html" title="Previous document">Introduction</a>
+        </li>
+        <li>
+          <a href="api.html" title="Next document">API reference</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+  <nav id="breadcrumbs">
+    <ul>
+      <li><a href="index.html">vntree  documentation</a></li> 
+    </ul>
+  </nav>
+  </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -46,21 +50,24 @@
 <h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#the-node-class" id="id1">The Node class</a></li>
-<li><a class="reference internal" href="#creating-trees" id="id2">Creating trees</a><ul>
-<li><a class="reference internal" href="#with-python-code" id="id3">with Python code</a></li>
-<li><a class="reference internal" href="#with-a-python-dictionary" id="id4">with a Python dictionary</a></li>
-<li><a class="reference internal" href="#with-yaml" id="id5">with YAML</a></li>
+<li><p><a class="reference internal" href="#the-node-class" id="id1">The Node class</a></p></li>
+<li><p><a class="reference internal" href="#creating-trees" id="id2">Creating trees</a></p>
+<ul>
+<li><p><a class="reference internal" href="#with-python-code" id="id3">with Python code</a></p></li>
+<li><p><a class="reference internal" href="#with-a-python-dictionary" id="id4">with a Python dictionary</a></p></li>
+<li><p><a class="reference internal" href="#with-yaml" id="id5">with YAML</a></p></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#traverse-tree" id="id6">Traverse tree</a><ul>
-<li><a class="reference internal" href="#top-down-traversal" id="id7">top-down traversal</a></li>
-<li><a class="reference internal" href="#bottom-up-traversal" id="id8">bottom-up traversal</a></li>
+<li><p><a class="reference internal" href="#traverse-tree" id="id6">Traverse tree</a></p>
+<ul>
+<li><p><a class="reference internal" href="#top-down-traversal" id="id7">top-down traversal</a></p></li>
+<li><p><a class="reference internal" href="#bottom-up-traversal" id="id8">bottom-up traversal</a></p></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#persistence" id="id9">Persistence</a><ul>
-<li><a class="reference internal" href="#save-tree" id="id10">Save tree</a></li>
-<li><a class="reference internal" href="#open-tree-file" id="id11">Open tree file</a></li>
+<li><p><a class="reference internal" href="#persistence" id="id9">Persistence</a></p>
+<ul>
+<li><p><a class="reference internal" href="#save-tree" id="id10">Save tree</a></p></li>
+<li><p><a class="reference internal" href="#open-tree-file" id="id11">Open tree file</a></p></li>
 </ul>
 </li>
 </ul>
@@ -73,14 +80,14 @@ The nodes in a tree are linked by specifying the parent of each node.
 A node consists of the following components, that are specified in order
 as arguments when the <cite>Node</cite> class is invoked:</p>
 <ol class="arabic simple">
-<li><cite>name</cite> - a string specifying the name of the node.</li>
-<li><cite>parent</cite> - a reference to the the parent node. The root node has no parent.</li>
-<li><cite>data</cite> - an optional dictionary containing node data.</li>
+<li><p><cite>name</cite> - a string specifying the name of the node.</p></li>
+<li><p><cite>parent</cite> - a reference to the the parent node. The root node has no parent.</p></li>
+<li><p><cite>data</cite> - an optional dictionary containing node data.</p></li>
 </ol>
 <p>Some points to be noted about the <cite>vntree.Node</cite> class:</p>
 <ul class="simple">
-<li>Each node has a <cite>childs</cite> attribute, which is a <cite>list</cite> containing the children of the node.</li>
-<li>If <cite>node.childs=[ ]</cite>, then <cite>node</cite> has no children. This type of node is sometimes referred to as a <cite>leaf</cite> node.</li>
+<li><p>Each node has a <cite>childs</cite> attribute, which is a <cite>list</cite> containing the children of the node.</p></li>
+<li><p>If <cite>node.childs=[ ]</cite>, then <cite>node</cite> has no children. This type of node is sometimes referred to as a <cite>leaf</cite> node.</p></li>
 </ul>
 </div>
 <div class="section" id="creating-trees">
@@ -283,10 +290,10 @@ For example:</p>
 </div>
 <p>Notes:</p>
 <ol class="arabic simple">
-<li>It is recommended to use the extension <cite>.vnpkl</cite> for this type of file.</li>
-<li>Invoking <cite>savefile</cite> on a node instance saves the complete tree.</li>
-<li><cite>savefile</cite> sets a vntree metadata TreeAttr attribute (<cite>_vnpkl_fpath</cite>) that contains the full path of the pickle file.</li>
-<li>After the first <cite>savefile</cite> invocation it is not necessary to specify argument <cite>filepath</cite> again, attribute <cite>_vnpkl_fpath</cite> will be used instead.</li>
+<li><p>It is recommended to use the extension <cite>.vnpkl</cite> for this type of file.</p></li>
+<li><p>Invoking <cite>savefile</cite> on a node instance saves the complete tree.</p></li>
+<li><p><cite>savefile</cite> sets a vntree metadata TreeAttr attribute (<cite>_vnpkl_fpath</cite>) that contains the full path of the pickle file.</p></li>
+<li><p>After the first <cite>savefile</cite> invocation it is not necessary to specify argument <cite>filepath</cite> again, attribute <cite>_vnpkl_fpath</cite> will be used instead.</p></li>
 </ol>
 </div>
 <div class="section" id="open-tree-file">
@@ -298,8 +305,8 @@ For example:</p>
 </div>
 <p>Notes:</p>
 <ol class="arabic simple">
-<li><cite>openfile</cite> is invoked on the class: <cite>Node.openfile(filepath)</cite></li>
-<li><cite>openfile</cite> re-sets the vntree metadata TreeAttr attribute <cite>_vnpkl_fpath</cite> to the current file path.</li>
+<li><p><cite>openfile</cite> is invoked on the class: <cite>Node.openfile(filepath)</cite></p></li>
+<li><p><cite>openfile</cite> re-sets the vntree metadata TreeAttr attribute <cite>_vnpkl_fpath</cite> to the current file path.</p></li>
 </ol>
 </div>
 </div>
@@ -337,43 +344,44 @@ For example:</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
+<form class="search" action="search.html" method="get">
+  <input type="text" name="q"
+   placeholder="type to search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="api.html" title="API reference"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="introduction.html" title="Introduction"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vntree  documentation</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Stephen McEntee.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
-    </div>
+  <div class="related bottom">
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="introduction.html" title="Previous document">Introduction</a>
+        </li>
+        <li>
+          <a href="api.html" title="Next document">API reference</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+  <nav id="breadcrumbs">
+    <ul>
+      <li><a href="index.html">vntree  documentation</a></li> 
+    </ul>
+  </nav>
+  </div>
+  <footer id="pagefooter">&copy; 2019, Stephen McEntee.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a>
+      2.1.2
+        with the <a href="http://github.com/irskep/sphinx-better-theme">
+          better</a> theme.
+
+  </footer>
+
+  
   </body>
 </html>

@@ -8,7 +8,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='vntree',
-    version='0.2.0',
+    version='0.3.0',
     description='A simple tree data structure in Python.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -27,7 +27,4 @@ setup(
     keywords='tree data structure node',
     packages=find_packages(exclude=['docs', 'examples']),
     python_requires='>=3.6',
-    install_requires=[
-        "pyyaml",
-    ],
 )
