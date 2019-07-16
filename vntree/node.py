@@ -484,7 +484,8 @@ class Node:
             level = _n._level - local_root_level
             if level==0:
                 _text += s_root
-            elif _n.parent.childs[0] == _n and len(_n.parent.childs)>1:   # first child
+            #elif _n.parent.childs[0] == _n and len(_n.parent.childs)>1:   # first child
+            elif _n.parent.childs[0] == _n:
                 #s_spar="f"
                 _text += (  (s_level + " "*(indent-1))*(level-1) 
                             + s_branch 

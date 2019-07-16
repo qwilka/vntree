@@ -2,6 +2,8 @@ import argparse
 import json
 import logging
 
+from vntree import Node
+
 aparser = argparse.ArgumentParser()
 aparser.add_argument("case", help="select example case", 
     nargs='?', default="basic1",
@@ -23,18 +25,9 @@ formatter = logging.Formatter('%(levelname)s|%(name)s|%(message)s')
 lh.setFormatter(formatter)
 logger.addHandler(lh)
 
-from vntree import Node
-
-example1 = True
-example2 = False
-treedict_example = False
-JSON_example = False
-YAML_example = False
-top_down_traversal = False
-bottom_up_traversal = False
 
 print(f"vntree usage example «{args.case}»:")
-#if example1:
+
 if args.case == "basic1":
     rootnode = Node("root-node")    # the root node has no parent
     print(f"The name of the root node is «{rootnode.name}»")
@@ -63,7 +56,6 @@ elif args.case == "basic2":
     c1.add_child(Node())  # grafting an external node into the tree
     print(rootnode.to_texttree())
 
-#if treedict_example:
 elif args.case == "treedict":
     # create a tree from a treedict
     tdict = {
@@ -86,7 +78,6 @@ elif args.case == "treedict":
     rootnode = Node(treedict=tdict)
     print(rootnode.to_texttree())
 
-#if JSON_example:
 elif args.case == "JSON":
     # tree from JSON (for convenience, start by creating a tree from treedict)
     tdict = {
@@ -121,7 +112,6 @@ elif args.case == "JSON":
     tcomp = newtree.tree_compare(origtree)
     print("Similarity between origtree and newtree: ", tcomp)
 
-#if YAML_example:
 elif args.case == "YAML":
     # tree from YAML
     yamltree = """
@@ -154,8 +144,6 @@ elif args.case == "YAML":
     ytree = Node.yaml2tree(yamltree)
     print(ytree.to_texttree())
 
-
-#if top_down_traversal:
 elif args.case == "top-down":
     tdict = {
         "name": "ROOT",
@@ -176,11 +164,10 @@ elif args.case == "top-down":
     }
     rootnode = Node(treedict=tdict)
     print(f"using example tree:\n{rootnode.to_texttree()}")
+    print("print tree nodes in «top-down» order:")
     for ii, n in enumerate(rootnode):
         print(f"node{ii} name=«{n.name}» coord={n._coord} level={n._level}")
 
-
-#if bottom_up_traversal:
 elif args.case == "bottom-up":
     tdict = {
         "name": "ROOT",
@@ -201,9 +188,7 @@ elif args.case == "bottom-up":
     }
     rootnode = Node(treedict=tdict)
     print(f"using example tree:\n{rootnode.to_texttree()}")
+    print("print tree nodes in «bottom-up» order:")
     for ii, n in enumerate(reversed(rootnode)):
         print(f"node{ii} name=«{n.name}» coord={n._coord} level={n._level}")
 
-
-# if __name__ == "__main__":
-#     pass
