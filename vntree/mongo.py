@@ -14,11 +14,11 @@ from .node import Node, NodeAttr, TreeAttr
 
 
 class MongoNode(Node):
-    host = TreeAttr("db_uri")
-    port = TreeAttr("db_uri")
-    db = TreeAttr("db_uri")
-    collection = TreeAttr("db_uri")
-    _id = NodeAttr("db_uri")
+    host = TreeAttr("vn")
+    port = TreeAttr("vn")
+    db = TreeAttr("vn")
+    collection = TreeAttr("vn")
+    _id = NodeAttr("vn")
     vn_uri = NodeAttr("vn")
 
     def __init__(self, name=None, parent=None, data=None, treedict=None, 
@@ -61,45 +61,72 @@ class MongoNode(Node):
         # if not self.collection:
         #     self.collection = value["collection"]
 
-    def get_data(self, *keys, db_load=False):
-        if db_load:
+    # def get_data(self, *keys, db_load=False):
+    #     if db_load:
+    #         self.db_load()
+    #     if not keys:
+    #         #return copy.deepcopy(self.data)
+    #         _val = self.data
+    #     _datadict = self.data
+    #     for _key in keys:
+    #         _val = _datadict.get(_key, None)
+    #         if isinstance(_val, dict):
+    #             _datadict = _val
+    #         else:
+    #             break
+    #     if isinstance(_val, dict):
+    #         _val = copy.deepcopy(_val)
+    #     if _val is None and not db_load:
+    #         _val = self.get_data(*keys, db_load=True)
+    #     return _val
+
+    def get_data(self, field, load=False):
+        """
+
+        :param field: use MongoDB dot notation to access embedded field.
+        :type field: str         
+        refs:
+        https://docs.mongodb.com/manual/core/document/#document-dot-notation
+        """
+        keys = field.split(".")
+        if load:
             self.db_load()
-        if not keys:
-            #return copy.deepcopy(self.data)
-            _val = self.data
-        _datadict = self.data
-        for _key in keys:
-            _val = _datadict.get(_key, None)
-            if isinstance(_val, dict):
-                _datadict = _val
-            else:
-                break
-        if isinstance(_val, dict):
-            _val = copy.deepcopy(_val)
-        if _val is None and not db_load:
-            _val = self.get_data(*keys, db_load=True)
+        _val = super().get_data(*keys)
+        if not load and _val is None:
+            _doc = find_by_id(self.db_uri)
+            for _key in keys:
+                _val = _doc.get(_key, None)
+                if isinstance(_val, dict):
+                    _doc = _val
+                else:
+                    break
         return _val
 
 
-    def set_data(self, *keys, value, update=False, db_load=False):
-        # Note that «value» is a keyword-only argument
-        if db_load:
-            self.db_load()
-        _datadict = self.data
-        for ii, _key in enumerate(keys):
-            if ii==len(keys)-1:
-                if update and isinstance(value, dict) and isinstance(_datadict[_key], dict):
-                    _datadict[_key].update(value)
-                else:
-                    _datadict[_key] = value
-            else:
-                if _key not in _datadict:
-                    _datadict[_key] = {}
-                _datadict = _datadict[_key]
-        retVal = True
-        if db_load:
-            retVal = self.db_update()
-        return retVal
+    def set_data(self, field, value):
+        """
+
+        :param field: use MongoDB dot notation to set embedded field.
+        :type field: str         
+        refs:
+        https://docs.mongodb.com/manual/core/document/#document-dot-notation
+        """
+        try:
+            retval = db_operation(self.db_uri, 'update_one', 
+                        update={"$set": {field: value}},
+                        upsert=False)
+        except Exception as err:
+            logger.error('%s.set_data %s; %s' % (self.__class__.__name__, str(self.db_uri), err))
+            return False
+        keys = field.split(".")
+        _val = super().set_data(*keys, value=value)
+        # _datadict = self.data
+        # for ii, _key in enumerate(keys):
+        #     if ii==len(keys)-1:
+        #         _datadict[_key] = value
+        #     else:
+        #         _datadict = _datadict.setdefault(_key, {})
+        return retval
 
 
     def db_insert(self, recursive=False):
@@ -126,7 +153,7 @@ class MongoNode(Node):
             logger.debug('%s.db_insert %s' % (self.__class__.__name__, str(_db_uri)))
             #retval = retval.inserted_id
             if retval: 
-                self._id = str(retval.inserted_id)
+                #self._id = str(retval.inserted_id)
                 retval = retval.inserted_id
         return retval 
 
@@ -198,7 +225,7 @@ class MongoNode(Node):
         return _doc
 
     @classmethod
-    def node_from_db(cls, host, port, db, collection, _id, parent=None):
+    def node_from_db(cls, host, port, db, collection, _id, parent=None, load=False):
         db_uri = {
             "host": host,
             "port": port,
@@ -214,7 +241,14 @@ class MongoNode(Node):
             del _doc["childs"]
         if "parent" in _doc:
             del _doc["parent"]
-        new_node = cls(treedict={ "data": _doc }, parent=parent)
+        if load:
+            tdict = { "data": _doc }
+        else:
+            tdict = { "data": {} }
+            for key in ["name", "vn"]:
+                if key in _doc:
+                    tdict["data"][key] = _doc.get(key)
+        new_node = cls(treedict=tdict, parent=parent)
         for _child_id in child_ids:
             db_uri["_id"] = _child_id
             cls.node_from_db(**db_uri, parent=new_node)

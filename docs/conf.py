@@ -100,10 +100,11 @@ html_static_path = ['_static']
 # 'searchbox.html']``.
 #
 html_sidebars = {'**': [
+    'sidebarlogo.html',
+    'searchbox.html',  
     'globaltoc.html', 
-    'relations.html', 
-    'sourcelink.html', 
-    'searchbox.html']}
+    'links.html'
+    ]}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------

@@ -22,15 +22,28 @@ db_uri = {
 }
 db_uri["_id"] = vn_uri_to_id(root_vn_uri )
 
-oldtree = MongoNode.node_from_db(**db_uri)
-if oldtree:
-    oldtree.db_delete(True) 
+CREATE_TREE = False
+READ_TREE = True
 
-rootnode = MongoNode("testroot", host=host, port=port, 
-    db=db, collection=collection, vn_uri=root_vn_uri )
+if CREATE_TREE:
+    oldtree = MongoNode.node_from_db(**db_uri, load=False)
+    if oldtree:
+        oldtree.db_delete(True) 
 
-ch1 = rootnode.add_child(MongoNode("first child", vn_uri="this is a test"))
-ch2 = rootnode.add_child(MongoNode("second child"))
-gc1 = ch1.add_child(MongoNode("first grandchild"))
+    rootnode = MongoNode("testroot", host=host, port=port, 
+        db=db, collection=collection, vn_uri=root_vn_uri )
 
-print(rootnode.to_texttree())
+    ch1 = rootnode.add_child(MongoNode("first child", vn_uri="this is a test"))
+    ch2 = rootnode.add_child(MongoNode("second child"))
+    gc1 = ch1.add_child(MongoNode("first grandchild"))
+
+    print(rootnode.to_texttree())
+    # rootnode.db_insert(True)    
+
+
+if READ_TREE:
+    rootnode = MongoNode.node_from_db(**db_uri, load=False)
+    ch1 = rootnode.childs[0]
+    ch2 = rootnode.childs[1]
+    gc1 = rootnode.childs[0].childs[0]
+    print(rootnode.to_texttree())

@@ -292,9 +292,10 @@ class Node:
             if ii==len(keys)-1:
                 _datadict[_key] = value
             else:
-                if _key not in _datadict:
-                    _datadict[_key] = {}
-                _datadict = _datadict[_key]
+                # if _key not in _datadict:
+                #     _datadict[_key] = {}
+                # _datadict = _datadict[_key]
+                _datadict = _datadict.setdefault(_key, {})
         return True
 
 
