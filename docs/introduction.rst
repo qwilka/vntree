@@ -57,5 +57,5 @@ True
 References
 ----------
 
-#. :py:mod:`vntree` on ``PyPI``  https://pypi.org/project/vntree/
-#. :py:mod:`vntree` on ``GitHub``  https://github.com/qwilka/vn-tree
+#. `Tree data structures <https://en.wikipedia.org/wiki/Tree_(data_structure)>`_ article on Wikipedia.
+#. `PyYAML <https://pyyaml.org/>`_ documentation.

@@ -334,9 +334,10 @@
             <span class="k">if</span> <span class="n">ii</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
                 <span class="n">_datadict</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_datadict</span><span class="p">:</span>
-                    <span class="n">_datadict</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="n">_datadict</span> <span class="o">=</span> <span class="n">_datadict</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span>
+                <span class="c1"># if _key not in _datadict:</span>
+                <span class="c1">#     _datadict[_key] = {}</span>
+                <span class="c1"># _datadict = _datadict[_key]</span>
+                <span class="n">_datadict</span> <span class="o">=</span> <span class="n">_datadict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">_key</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
