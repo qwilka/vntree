@@ -43,7 +43,7 @@ Node(parent=n1, data={"name": "grand child", "test": 1234})
 class BasicTests(unittest.TestCase):
 
     def test_yamltree_compare(self):
-        ytreeroot = Node.import_yamltree(yamltree)
+        ytreeroot = Node.yaml2tree(yamltree)
         self.assertFalse(ytreeroot is rootnode)
         self.assertEqual(rootnode.tree_compare(ytreeroot), 1.0)
 

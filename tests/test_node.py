@@ -25,7 +25,7 @@ ggrandchild.add_child(Node("child-on-level5"))
 class BasicTests(unittest.TestCase):
 
     def test_texttree(self):
-        _texttree = """| ROOT\n+--| 1st child\n+--| 2nd child\n.  +--| grand-child1\n.  +--| grand-child2\n+--| 3rd child\n.  +--| grand-child3\n.  .  +--| great-grandchild\n.  .  .  +--| great-great-grandchild (2, 0, 0, 0)\n.  .  .  +--| child-on-level5\n.  .  +--| name-in-data\n+--| another child\n"""
+        _texttree = """| ROOT\n+--| 1st child\n.  | 2nd child\n.  +--| grand-child1\n.  .  | grand-child2\n.  | 3rd child\n.  +--| grand-child3\n.  .  +--| great-grandchild\n.  .  .  +--| great-great-grandchild (2, 0, 0, 0)\n.  .  .  .  | child-on-level5\n.  .  .  | name-in-data\n.  | another child\n"""
         self.assertEqual(rootnode.to_texttree(), _texttree)
 
     def test_roundtrip(self):
