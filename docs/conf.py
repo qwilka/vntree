@@ -69,7 +69,7 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'sphinx'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -77,8 +77,8 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #  https://sphinx-better-theme.readthedocs.io/en/latest/index.html
-html_theme_path = [better_theme_path]
-html_theme = 'better'    #'nature'
+#html_theme_path = [better_theme_path]
+html_theme = 'nature'    #'nature'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -100,11 +100,12 @@ html_static_path = ['_static']
 # 'searchbox.html']``.
 #
 html_sidebars = {'**': [
-    'sidebarlogo.html',
-    'searchbox.html',  
+    'sidebarlogo.html', 
     'globaltoc.html', 
+    'searchbox.html', 
     'links.html'
-    ]}
+    ]
+}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -189,3 +190,7 @@ intersphinx_mapping = {
     'python': ('http://docs.python.org/3', None),
 }
 intersphinx_cache_limit = 0
+
+autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
+autoclass_content = 'both'
+autodoc_member_order = 'bysource'

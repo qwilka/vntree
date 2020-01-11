@@ -1,0 +1,21 @@
+
+
+tree library
+============
+https://jtree.treenotation.org/
+
+comma-separated tree
+====================
+https://observablehq.com/@mbostock/comma-separated-tree
+https://news.ycombinator.com/item?id=18710471
+
+https://stackoverflow.com/questions/14611352/malformed-string-valueerror-ast-literal-eval-with-string-representation-of-tup
+
+
+tree graph libraries
+====================
+https://graph-tool.skewed.de/
+
+
+
+

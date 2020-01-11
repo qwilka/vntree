@@ -1,0 +1,80 @@
+nodes.py
+Contains classes for basic tree data structures.
+class Node
+This is the base (super) class for the tree data structure.  Node is designed to work as part of the Qt model-view framework, it acts
+as the interface between the (real) data and the 'model' part of Qt model-view. Although Node is designed to be consistent with 
+the Qt model-view framework, and is embedded within the 'model', it is an independent data structure and can be also used apart from Qt.  
+Note that Node is not the actual (real) data, it is a parallel data structure for interfacing with Qt model-view.  Contrary to claims made in the official
+Qt documentation (http://doc.qt.io/qt-5/modelview.html), it involves duplicating the original/real data, and it is necessary for the 
+programmer to ensure that Node remains consistent with the real data.  
+notes:
+*Currently Node is designed to support static trees. Support for dynamic features like drag/drop, cut/paste are not yet implemented.
+*Node is an iterator, to enable easy traversal of the tree in a loop.  This feature is impletemented in method __iter__
+*Nodes's attributes and methods are given distinctive names, like 'get_data' and '_childs'.  This is to try to avoid confusion
+between Node and parallel Qt model classes (e.g. class TreeModel/QAbstractItemModel).
+*Some attributes are 'private' (indicated with a single leading underscore, e.g. '_name', '_childs'). This may be an unnecessary complication (note
+ that Python does not really have private attributes), with unnecessary getter and setter functions. 
+*The documentation for the Qt model-view framework is confusing and misleading (IMHO), however these video
+tutorials are very helpful  http://www.yasinuludag.com/blog/?p=98
+
+class VnNode  (sub-class of Node)
+This Node class is designed to be the basis of the tree data structure for the Visinum program.  
+VnNode implements a tree data structure based on a Python dictionary, with child nodes in a 
+list with the key '_childs'. For example (see example code at bottom of node.py):
+{"name":"root VnNode", "attribute1":123,
+ "_childs":[
+            {"name":"child1"},
+            {"name":"child2",
+                  "_childs":[
+                  {"name":"grandchild1"}]  },
+            {"name":"child3", "attribute11":321}, 
+            {}, 
+            {"name":"child5", 
+                  "_childs":[
+                  {"name":"grandchild2"}, 
+                  {"name":"grandchild3"}]  } 
+            ]  }
+this dictionary gives the following tree (printed out using method 'to_texttree'):
+|---root VnNode
+.   |---child1
+.   |---child2
+.   .   |---grandchild1
+.   |---child3
+.   |---nameless vnnode
+.   |---child5
+.   .   |---grandchild2
+.   .   |---grandchild3
+
+
+Links ============================================================================================
+https://wiki.python.org/moin/PyQt/Handling%20Qt's%20internal%20item%20MIME%20type   Qt's internal item MIME type
+http://stackoverflow.com/questions/31478121/view-qstandarditemmodel-with-column-of-checkboxes-in-pyside-pyqt
+https://srinikom.github.io/pyside-docs/PySide/QtGui/index.html
+https://srinikom.github.io/pyside-docs/PySide/QtGui/QStandardItemModel.html
+https://wiki.python.org/moin/PyQt/Undo%20and%20redo%20with%20line%20edits   Undo and redo with line edits
+
+https://forum.qt.io/topic/7636/qtreeview-root-node-isn-t-shown
+http://www.qtcentre.org/threads/38120-QTreeWidget-How-to-display-the-root-item
+
+http://www.jeffknupp.com/blog/2015/08/30/python-dictionaries/
+http://www.jeffknupp.com/blog/2014/06/18/improve-your-python-python-classes-and-object-oriented-programming/
+http://nedbatchelder.com/text/unipain.html
+
+PyQt5 examples:
+https://github.com/baoboa/pyqt5/tree/master/examples/itemviews/editabletreemodel 
+
+PyQt4 Model View Programming Tutorials:
+http://www.yasinuludag.com/blog/?p=98
+https://www.youtube.com/view_play_list?p=8B63F2091D787896
+http://doc.qt.io/qt-5/modelview.html
+http://doc.qt.io/qt-5/model-view-programming.html
+http://stackoverflow.com/questions/5543198/why-qt-is-misusing-model-view-terminology
+
+drag/drop
+https://riverbankcomputing.com/pipermail/pyqt/2009-April/022729.html   QTreeView, arbitrary Python object, drag/drop working example
+http://www.qtcentre.org/threads/54104-Model-View-Programming-How-to-store-the-underlying-data-different-approach
+
+Python Unit Testing 
+http://cgoldberg.github.io/python-unittest-tutorial/
+
+http://stackoverflow.com/questions/6914803/python-iterator-through-tree-with-list-of-children

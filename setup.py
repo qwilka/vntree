@@ -12,7 +12,7 @@ setup(
     description='A simple tree data structure in Python.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/qwilka/vn-tree',
+    url='https://github.com/qwilka/vntree',
     author='Stephen McEntee',
     author_email='stephenmce@gmail.com',
     license='MIT',

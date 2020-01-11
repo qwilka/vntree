@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <title>vntree.node &#8212; vntree  documentation</title>
-    <link rel="stylesheet" href="../../_static/better.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -13,26 +13,21 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <header id="pageheader"><h1><a href="../../index.html ">
-        vntree  documentation
-    </a></h1></header>
-  <div class="related top">
-  <nav id="rellinks">
-    <ul>
-    </ul>
-  </nav>
-  <nav id="breadcrumbs">
-    <ul>
-      <li><a href="../../index.html">vntree  documentation</a></li>
-      <li>
-        <a href="../index.html">Module code</a>
-      </li> 
-    </ul>
-  </nav>
-  </div>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">vntree  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -557,7 +552,7 @@
         <span class="k">return</span> <span class="n">_text</span></div>
 
 
-    <span class="k">def</span> <span class="nf">from_treedict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">treedict</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.from_treedict"><a class="viewcode-back" href="../../api.html#vntree.Node.from_treedict">[docs]</a>    <span class="k">def</span> <span class="nf">from_treedict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">treedict</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">treedict</span><span class="p">:</span>
             <span class="c1">#self.data = collections.defaultdict(dict, treedict[&quot;data&quot;])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">treedict</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
@@ -568,9 +563,9 @@
         <span class="k">if</span> <span class="s2">&quot;childs&quot;</span> <span class="ow">in</span> <span class="n">treedict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">_childdict</span> <span class="ow">in</span> <span class="n">treedict</span><span class="p">[</span><span class="s2">&quot;childs&quot;</span><span class="p">]:</span>
                 <span class="c1">#self.childs.append( self.__class__(parent=self, treedict=_childdict) )</span>
-                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">treedict</span><span class="o">=</span><span class="n">_childdict</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">treedict</span><span class="o">=</span><span class="n">_childdict</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">to_treedict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vntree_meta</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.to_treedict"><a class="viewcode-back" href="../../api.html#vntree.Node.to_treedict">[docs]</a>    <span class="k">def</span> <span class="nf">to_treedict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vntree_meta</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="c1"># NOTE: replace vars(self) with self.__dict__ ( and self.__class__.__dict__ ?)</span>
         <span class="n">_dct</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;parent&quot;</span><span class="p">,</span> <span class="s2">&quot;childs&quot;</span><span class="p">]}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">vntree_meta</span> <span class="ow">and</span> <span class="s2">&quot;_vntree_meta&quot;</span> <span class="ow">in</span> <span class="n">_dct</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]:</span>
@@ -579,10 +574,10 @@
             <span class="n">_dct</span><span class="p">[</span><span class="s2">&quot;childs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">_child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childs</span><span class="p">:</span>
                 <span class="n">_dct</span><span class="p">[</span><span class="s2">&quot;childs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">_child</span><span class="o">.</span><span class="n">to_treedict</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span> <span class="p">)</span>
-        <span class="k">return</span> <span class="n">_dct</span> 
+        <span class="k">return</span> <span class="n">_dct</span> </div>
 
-    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">):</span>
-        <span class="k">pass</span>
+<div class="viewcode-block" id="Node.to_json"><a class="viewcode-back" href="../../api.html#vntree.Node.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 
     <span class="c1"># def from_json(self, filepath):</span>
     <span class="c1">#     err = &quot;&quot;</span>
@@ -670,12 +665,12 @@
         <span class="k">return</span> <span class="n">rootnode</span>            </div>
 
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Node.setup_yaml"><a class="viewcode-back" href="../../api.html#vntree.Node.setup_yaml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setup_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">yamlnode_constructor</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">yamlnode</span><span class="p">)</span> <span class="p">:</span>
             <span class="n">fields</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">construct_mapping</span><span class="p">(</span><span class="n">yamlnode</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span>  <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">fields</span><span class="p">)</span>
-        <span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="o">.</span><span class="n">add_constructor</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="o">+</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">yamlnode_constructor</span><span class="p">)</span>
+        <span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="o">.</span><span class="n">add_constructor</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="o">+</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">yamlnode_constructor</span><span class="p">)</span></div>
         <span class="c1"># def yamlnode_representer(dumper, data):</span>
         <span class="c1">#     rep = &#39;!Node&#39;</span>
         <span class="c1">#     return dumper.represent_scalar(&#39;!Node&#39;, &#39;%sd%s&#39; % data)</span>
@@ -718,7 +713,7 @@
         <span class="k">return</span> <span class="n">yamltree_root</span></div>
 
 
-    <span class="k">def</span> <span class="nf">tree2yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.tree2yaml"><a class="viewcode-back" href="../../api.html#vntree.Node.tree2yaml">[docs]</a>    <span class="k">def</span> <span class="nf">tree2yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># if not self.__class__.YAML_setup:</span>
         <span class="c1">#     self.__class__.setup_yaml()</span>
         <span class="c1">#     self.__class__.YAML_setup = True </span>
@@ -748,7 +743,7 @@
         <span class="n">yltree</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">yltree</span><span class="p">,</span> <span class="s2">&quot;  &quot;</span><span class="p">)</span>
         <span class="n">yltree</span> <span class="o">=</span> <span class="n">yltree</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">yltree</span> <span class="o">=</span> <span class="n">yltree</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  !&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- !&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">yltree</span></div>
+        <span class="k">return</span> <span class="n">yltree</span></div></div>
 
 
 
@@ -789,22 +784,25 @@
         <div class="sphinxsidebarwrapper"><p class="logo"><a href="../../index.html">
 <img class="logo" src="../../_static/logo.png" width="180" alt="Logo"/>
 </a></p>
-<form class="search" action="../../search.html" method="get">
-  <input type="text" name="q"
-   placeholder="type to search" />
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
-<script type="text/javascript">$('#searchbox').show(0);</script>
 <h3><a href="../../index.html">Table of Contents</a></h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../user-guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
 </ul>
-<h3>Links</h3>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><h3>Links</h3>
 <ul>
-  <li><a href="https://github.com/qwilka/vn-tree">vntree on GitHub</a></li>
+  <li><a href="https://github.com/qwilka/vntree">vntree on GitHub</a></li>
   <li><a href="https://pypi.org/project/vntree">vntree on PyPI</a></li>
   <li><a href="https://qwilka.github.io/">Qwilka blog</a></li>
 </ul>
@@ -812,28 +810,22 @@
       </div>
       <div class="clearer"></div>
     </div>
-  <div class="related bottom">
-  <nav id="rellinks">
-    <ul>
-    </ul>
-  </nav>
-  <nav id="breadcrumbs">
-    <ul>
-      <li><a href="../../index.html">vntree  documentation</a></li>
-      <li>
-        <a href="../index.html">Module code</a>
-      </li> 
-    </ul>
-  </nav>
-  </div>
-  <footer id="pagefooter">&copy; 2019, Stephen McEntee.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a>
-      2.1.2
-        with the <a href="http://github.com/irskep/sphinx-better-theme">
-          better</a> theme.
-
-  </footer>
-
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">vntree  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Stephen McEntee.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
+    </div>
   </body>
 </html>
