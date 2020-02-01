@@ -1,16 +1,21 @@
 """
-Copyright © 2015 Qwilka Ltd. All rights reserved.
-Any unauthorised copying or distribution is strictly prohibited.
-Author: Stephen McEntee <stephenmce@gmail.com> 
+Copyright © 2020 Stephen McEntee
+Licensed under the MIT license. 
+See «vntree» LICENSE file for details https://github.com/qwilka/vntree/blob/master/LICENSE
 """
 import logging
 logger = logging.getLogger(__name__)
 from PyQt5.QtCore import QAbstractItemModel, QModelIndex, Qt
 
 
-if __name__ != "__main__":
+# Python3 import weirdness http://stackoverflow.com/questions/16981921/relative-imports-in-python-3
+try:   # cannot use relative imports when running this module directly
     from .nodes import Node, VnNode
     from .file_system_tree import fstree_from_JSON
+except (SystemError, ImportError):
+    from nodes import Node, VnNode
+    from file_system_tree import fstree_from_JSON
+
 
 
 class TreeModel(QAbstractItemModel):

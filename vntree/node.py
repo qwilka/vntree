@@ -1,7 +1,7 @@
 """
-Copyright © 2018-2019 Stephen McEntee
+Copyright © 2018-2020 Stephen McEntee
 Licensed under the MIT license. 
-See «vn-tree» LICENSE file for details https://github.com/qwilka/vn-tree/blob/master/LICENSE
+See «vntree» LICENSE file for details https://github.com/qwilka/vntree/blob/master/LICENSE
 """
 #import collections
 import copy

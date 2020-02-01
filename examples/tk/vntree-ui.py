@@ -1,7 +1,12 @@
-from tkinter import *
-from tkinter.ttk import *
-#import tkinter.simpledialog
-from tkinter.simpledialog import askstring
+import sys
+
+try:
+    from tkinter import *
+    from tkinter.ttk import *
+    from tkinter.simpledialog import askstring
+except Exception as err:
+    print(" ERROR: unable to find required Python module «tkinter» \n", err)
+    sys.exit(1)
 
 
 
@@ -257,17 +262,17 @@ class MainApp(Frame):
         self.NB.master.grid_rowconfigure(0, weight=1)
         
         # add Treeview
+        self.TV_id_count = 0
         self.TV = Treeview(self.PW.f1)
-        self.TV.insert('', 'end', 'BLC', text='Base cases')
+        self.TV.insert('', 'end', 'NODEID_'+str(self.TV_id_count), text='root-node')
         self.TV.grid(column=0, row=0, sticky='nsew')
         self.TV.master.grid_columnconfigure(0, weight=1)
         self.TV.master.grid_rowconfigure(0, weight=1)
-        self.TVleafref = 0
         
         # tree pop-up
         #self.treePopupMenu(self.TV)
         self.TPM = Menu(self.TV, tearoff=0)
-        self.TPM.add_command(label="add child", command=self.onAddLeaf)
+        self.TPM.add_command(label="add child", command=self.onAddChild)
         self.TPM.add_command(label="edit name", command=self.onNodeNameEdit)
         self.TPM.add_command(label="close menu", command=self.onTPMClose)
         self.TV.bind("<Button-3>", self.showTreePopupMenu)
@@ -308,15 +313,15 @@ class MainApp(Frame):
         #item.text = node_name
 
 
-    def onAddLeaf(self):
+    def onAddChild(self):
         item = self.TV.selection()[0]
         node_name = askstring("New Child", prompt="Enter the node name", initialvalue="")
         if not node_name:
             node_name = "no-name-node"
         # self.TV.insert(item, 'end', 'LC_'+str(self.TVleafref), 
         #   text='Load case '+str(self.TVleafref))
-        self.TV.insert(item, 'end', 'LC_'+str(self.TVleafref), text=node_name)
-        self.TVleafref += 1
+        self.TV_id_count += 1
+        self.TV.insert(item, 'end', 'NODEID_'+str(self.TV_id_count), text=node_name)
         #self.NB.add(ttk.Frame(self.NB), text='dummy name')       
 
     def onTPMClose(self):

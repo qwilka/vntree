@@ -28,8 +28,10 @@ class Node:
     # This enables convenient tree traversal (using a "for" loop, for example).
     # "yield" turns the «iterator» into a «generator».
     def __iter__(self): 
+        print("__iter__ self::", self)
         yield self  
         for node in itertools.chain(*map(iter, self.children)):
+            print("__iter__ chain::", node)
             yield node 
 
     def __reversed__(self):  
@@ -161,13 +163,13 @@ if __name__ == '__main__':
         Node("great-grandchild2 (leaf node)", grandchild3)
 
         print()
-        print(rootnode.to_texttree())
-        print("\nTree iterate top-down:")
+        #print(rootnode.to_texttree())
+        # print("\nTree iterate top-down:")
         for node in rootnode:
             print(node)
-        print("\nTree iterate bottom-up:")
-        for node in reversed(rootnode):
-            print(node)
+        # print("\nTree iterate bottom-up:")
+        # for node in reversed(rootnode):
+        #     print(node)
         
 
     if FILES_FOLDERS_TREE:

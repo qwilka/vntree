@@ -1,7 +1,7 @@
 """
-Copyright © 2015 Qwilka Ltd. All rights reserved.
-Any unauthorised copying or distribution is strictly prohibited.
-Author: Stephen McEntee <stephenmce@gmail.com> 
+Copyright © 2020 Stephen McEntee
+Licensed under the MIT license. 
+See «vntree» LICENSE file for details https://github.com/qwilka/vntree/blob/master/LICENSE
 """
 import logging
 import fnmatch
