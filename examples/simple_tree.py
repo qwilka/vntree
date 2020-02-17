@@ -17,26 +17,31 @@ class Node:
             parent.add_child(self)
         elif parent is None:
             self.parent = None
+            self._show_traversal = False  # print messages in __iter__ and __reversed__ methods
         else:
             raise TypeError("Node instance «{}» argument «parent» type not valid: {}".format(name, type(parent)))
+        
 
     def __str__(self):
         _level = len(self.get_ancestors())
-        return "{} level={} «{}»".format(self.__class__.__name__, _level, self.name)
+        return "{} «{}» level={} coord={}".format(self.__class__.__name__, self.name, _level, self._coord)
 
     # __iter__ is a special method that turns the tree into an «iterator».
     # This enables convenient tree traversal (using a "for" loop, for example).
     # "yield" turns the «iterator» into a «generator».
     def __iter__(self): 
-        print("__iter__ self::", self)
+        if self._root._show_traversal: print("__iter__ self::", self)
         yield self  
         for node in itertools.chain(*map(iter, self.children)):
-            print("__iter__ chain::", node)
+            if self._root._show_traversal: print("__iter__ chain::", node)
             yield node 
 
+
     def __reversed__(self):  
-        for node in itertools.chain(*map(reversed, self.children)):
+        for node in itertools.chain(*map(reversed, reversed(self.children))):
+            if self._root._show_traversal: print("__reversed__ chain::", node)
             yield node
+        if self._root._show_traversal: print("__reversed__ self::", self)
         yield self 
 
     def add_child(self, newnode):
@@ -51,6 +56,23 @@ class Node:
             _curnode = _curnode.parent
             ancestors.append(_curnode)
         return ancestors
+
+    @property
+    def _root(self):
+        _n = self
+        while _n.parent:
+            _n = _n.parent
+        return _n
+
+    @property
+    def _coord(self):
+        _coord = []
+        _node = self
+        while _node.parent:
+            _idx = _node.parent.children.index(_node)
+            _coord.insert(0, _idx)
+            _node = _node.parent
+        return tuple(_coord)
 
     def to_texttree(self):
         treetext = ""
@@ -144,12 +166,12 @@ def make_file_system_tree(root_folder, _parent=None):
 
 if __name__ == '__main__':
 
-    SIMPLE_TREE = True
+    SIMPLE_TREE_TOP_DOWN = False
+    SIMPLE_TREE_BOTTOM_UP = True
     FILES_FOLDERS_TREE = False
     DECISION_TREE = False
     
-    if SIMPLE_TREE:
-
+    if SIMPLE_TREE_TOP_DOWN or SIMPLE_TREE_BOTTOM_UP:
         rootnode   = Node('ROOT ("top" of the tree)')
         Node("1st child (leaf node)", parent=rootnode)
         child2 = Node("2nd child", rootnode)
@@ -161,15 +183,22 @@ if __name__ == '__main__':
         ggrandchild = Node("great-grandchild", grandchild3)
         Node("great-great-grandchild (leaf node)", ggrandchild)
         Node("great-grandchild2 (leaf node)", grandchild3)
-
         print()
-        #print(rootnode.to_texttree())
-        # print("\nTree iterate top-down:")
+        print(rootnode.to_texttree())
+
+    if SIMPLE_TREE_TOP_DOWN:
+        # switch-on tracing messages in __iter__ method:
+        rootnode._show_traversal = False
+        print("\nTree iterate top-down:")
         for node in rootnode:
             print(node)
-        # print("\nTree iterate bottom-up:")
-        # for node in reversed(rootnode):
-        #     print(node)
+
+    if SIMPLE_TREE_BOTTOM_UP:
+        # switch-on tracing messages in __reversed__ method:
+        rootnode._show_traversal = False
+        print("\nTree iterate bottom-up:")
+        for node in reversed(rootnode):
+            print(node)
         
 
     if FILES_FOLDERS_TREE:

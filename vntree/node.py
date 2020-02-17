@@ -130,7 +130,7 @@ class Node:
 
 
     def __str__(self):
-        return "{} coord={} «{}»".format(self.__class__.__name__, self._coord, self.name)
+        return "{} «{}» coord={}".format(self.__class__.__name__, self.name, self._coord)
 
 
     def __iter__(self): 
@@ -140,7 +140,7 @@ class Node:
 
 
     def __reversed__(self):  
-        for node in itertools.chain(*map(reversed, self.childs)):
+        for node in itertools.chain(*map(reversed, reversed(self.childs))):
             yield node
         yield self 
 
@@ -514,6 +514,10 @@ class Node:
             _text += "\n"
         return _text
 
+    def show(self):
+        """Print out a text representation of the tree using to_texttree().
+        """
+        print(self.to_texttree())
 
     def from_treedict(self, treedict):
         if "data" in treedict:
@@ -715,26 +719,32 @@ if __name__ == "__main__":
     ch = logging.StreamHandler()
     logger.addHandler(ch)
 
-    SIMPLE_TREE = True
+    SIMPLE_TREE_TOP_DOWN = True
+    SIMPLE_TREE_BOTTOM_UP = True
 
-    if SIMPLE_TREE:
-
-        rootnode   = Node('ROOT (level 0, the "top" of the tree)')
-        Node("1st child (level 1, leaf node)", parent=rootnode)
-        child2 = Node("2nd child (level 1)", rootnode)
-        Node("grand-child1 (level 2, leaf node)", child2)
-        Node("grand-child2 (level 2, leaf node)", child2)
-        child3 = Node("3rd child (level 1)", rootnode)
-        Node("another child (level 1, leaf node)", rootnode)
-        grandchild3 = Node(parent=child3, name="grand-child3 (level 2")
-        ggrandchild = Node("great-grandchild (level 3)", grandchild3)
-        Node("great-great-grandchild (level4, leaf node)", ggrandchild)
-        Node("great-grandchild2 (level 3, leaf node)", grandchild3)
-
+    if SIMPLE_TREE_TOP_DOWN or SIMPLE_TREE_BOTTOM_UP:
+        rootnode   = Node('ROOT ("top" of the tree)')
+        Node("1st child (leaf node)", parent=rootnode)
+        child2 = Node("2nd child", rootnode)
+        Node("grand-child1 (leaf node)", child2)
+        Node("grand-child2 (leaf node)", child2)
+        child3 = Node("3rd child", rootnode)
+        Node("another child (leaf node)", rootnode)
+        grandchild3 = Node(parent=child3, name="grand-child3")
+        ggrandchild = Node("great-grandchild", grandchild3)
+        Node("great-great-grandchild (leaf node)", ggrandchild)
+        Node("great-grandchild2 (leaf node)", grandchild3)
+        print()
         print(rootnode.to_texttree())
-        # for ii, node in enumerate(rootnode):
-        #     print("{} top-down «{}»".format(ii, node.name))
-        # for ii, node in enumerate(reversed(rootnode)):
-        #     print("{} bottom-up «{}»".format(ii, node.name))
+
+    if SIMPLE_TREE_TOP_DOWN:
+        print("\nTree iterate top-down:")
+        for ii, node in enumerate(rootnode):
+            print("{} top-down «{}»".format(ii, node.name))
+
+    if SIMPLE_TREE_BOTTOM_UP:
+        print("\nTree iterate bottom-up:")
+        for ii, node in enumerate(reversed(rootnode)):
+            print("{} bottom-up «{}»".format(ii, node.name))
 
 

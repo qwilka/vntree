@@ -21,3 +21,18 @@ GUI
 ====
 https://github.com/dmnfarrell/pandastable
 
+
+dictionary
+=============
+http://stackoverflow.com/questions/6780952/how-to-change-behavior-of-dict-for-an-instance
+https://stackoverflow.com/questions/651794/whats-the-best-way-to-initialize-a-dict-of-dicts-in-python
+
+https://www.freevector.com/map-of-europe
+<a href="https://www.freevector.com/continents-map#">FreeVector.com</a>
+<a href="https://www.freevector.com/map-of-europe">FreeVector.com</a>
+
+
+
+Python
+======
+https://stackoverflow.com/questions/1436703/difference-between-str-and-repr
