@@ -30,24 +30,25 @@ class Node:
     # This enables convenient tree traversal (using a "for" loop, for example).
     # "yield" turns the «iterator» into a «generator».
     def __iter__(self): 
-        if self._root._show_traversal: print("__iter__ self::", self)
+        if self._root._show_traversal: print(f":self: «{self.name}»")
         yield self  
-        for node in itertools.chain(*map(iter, self.children)):
-            if self._root._show_traversal: print("__iter__ chain::", node)
+        for ii, node in enumerate(itertools.chain(*map(iter, self.children))):
+            if self._root._show_traversal: print(f":{ii}: «{node.name}» «{self.name}»")
             yield node 
 
 
     def __reversed__(self):  
-        for node in itertools.chain(*map(reversed, reversed(self.children))):
-            if self._root._show_traversal: print("__reversed__ chain::", node)
+        for ii, node in enumerate(itertools.chain(*map(reversed, reversed(self.children)))):
+            if self._root._show_traversal: print(f":{ii}: «{node.name}» «{self.name}»")
             yield node
-        if self._root._show_traversal: print("__reversed__ self::", self)
+        if self._root._show_traversal: print(f":self: «{self.name}»")
         yield self 
+
 
     def add_child(self, newnode):
         self.children.append(newnode)
         newnode.parent = self
-        return True    
+        return newnode       
 
     def get_ancestors(self):
         ancestors=[]
@@ -166,12 +167,28 @@ def make_file_system_tree(root_folder, _parent=None):
 
 if __name__ == '__main__':
 
-    SIMPLE_TREE_TOP_DOWN = False
-    SIMPLE_TREE_BOTTOM_UP = True
+    SIMPLE_TREE = True
+    TOP_DOWN_TRAVERSAL = False
+    BOTTOM_UP_TRAVERSAL = False
     FILES_FOLDERS_TREE = False
     DECISION_TREE = False
-    
-    if SIMPLE_TREE_TOP_DOWN or SIMPLE_TREE_BOTTOM_UP:
+
+    if SIMPLE_TREE:
+        rootnode = Node('root-node')
+        child = Node('child', rootnode)
+        gchild = child.add_child( Node('grand-child') )
+        gchild.add_child( Node('great-grand-child') )
+        print(rootnode.to_texttree())
+        rootnode._show_traversal = True
+        print("\nTree traverse top-down:")
+        for node in rootnode:
+            print(node)    
+        print("\nTree traverse bottom-up:")
+        for node in reversed(rootnode):
+            print(node)
+
+
+    if TOP_DOWN_TRAVERSAL or BOTTOM_UP_TRAVERSAL:
         rootnode   = Node('ROOT ("top" of the tree)')
         Node("1st child (leaf node)", parent=rootnode)
         child2 = Node("2nd child", rootnode)
@@ -186,14 +203,14 @@ if __name__ == '__main__':
         print()
         print(rootnode.to_texttree())
 
-    if SIMPLE_TREE_TOP_DOWN:
+    if TOP_DOWN_TRAVERSAL:
         # switch-on tracing messages in __iter__ method:
         rootnode._show_traversal = False
         print("\nTree iterate top-down:")
         for node in rootnode:
             print(node)
 
-    if SIMPLE_TREE_BOTTOM_UP:
+    if BOTTOM_UP_TRAVERSAL:
         # switch-on tracing messages in __reversed__ method:
         rootnode._show_traversal = False
         print("\nTree iterate bottom-up:")

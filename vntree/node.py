@@ -543,24 +543,31 @@ class Node:
                 _dct["childs"].append( _child.to_treedict(recursive=recursive) )
         return _dct 
 
-    def to_json(self, filepath, default=str):
-        pass
 
-    # def from_json(self, filepath):
-    #     err = ""
-    #     _treedict = None
-    #     if isinstance(filepath, str) and os.path.isfile(filepath):
-    #         try:
-    #             with open(filepath, 'r') as _fh:
-    #                 _treedict = json.load(_fh)
-    #         except Exception as err: 
-    #             pass
-    #     if not _treedict:
-    #         logger.warning("%s.from_json: node«%s», cannot open «filepath»=«%s», %s." % (self.__class__.__name__, self.name, filepath, err))
-    #         return False
-    #     else:
-    #         self.from_treedict(treedict=_treedict)
-    #         return True
+    def to_json(self, filepath, default=str):
+        _treedict = self.to_treedict()
+        with open(filepath, 'w') as _fh:
+            json.dump(_treedict, _fh)
+        return True
+
+
+    @classmethod
+    def from_json(cls, filepath):
+        err = ""
+        _treedict = None
+        if isinstance(filepath, str) and os.path.isfile(filepath):
+            try:
+                with open(filepath, 'r') as _fh:
+                    _treedict = json.load(_fh)
+            except Exception as err: 
+                pass
+        if not _treedict:
+            logger.warning("%s.from_json: cannot open «filepath»=«%s», %s." % (cls.__name__, filepath, err))
+            return False
+        else:
+            rootnode = cls(treedict=_treedict)
+            return rootnode
+
 
     def tree_compare(self, othertree, vntree_meta=False):
         """Compare the (sub-)tree rooted at `self` with another tree.
