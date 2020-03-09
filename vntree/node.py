@@ -13,6 +13,7 @@ import os
 import pathlib 
 import pickle
 import textwrap
+import uuid
 
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ class NodeAttr:
     :param ns: namespace for storing attribute in a nested dictionary in `data`.
                 `ns=None` for top-level attributes.
     :type ns: str or None
+    :param initial: optional default value.
     """
     def __init__(self, ns=None, initial=None):
         self.ns = ns
@@ -100,7 +102,8 @@ class Node:
     """
     YAML_setup = False
     name = NodeAttr()
-    _vnpkl_fpath = TreeAttr("_vntree_meta")
+    _nodeid = NodeAttr("_treemeta")
+    _vnpkl_fpath = TreeAttr("_treemeta")
 
 
     def __init__(self, name=None, parent=None, data=None, 
@@ -127,6 +130,7 @@ class Node:
             self.from_treedict(treedict)
         if vnpkl_fpath and isinstance(vnpkl_fpath, str):
             self._vnpkl_fpath = vnpkl_fpath
+        self._nodeid = uuid.uuid4().hex
 
 
     def __str__(self):
@@ -532,20 +536,20 @@ class Node:
                 #self.childs.append( self.__class__(parent=self, treedict=_childdict) )
                 self.__class__(parent=self, treedict=_childdict)
 
-    def to_treedict(self, recursive=True, vntree_meta=True):
+    def to_treedict(self, recursive=True, treemeta=False):
         # NOTE: replace vars(self) with self.__dict__ ( and self.__class__.__dict__ ?)
-        _dct = {k:v for k, v in vars(self).items() if k not in ["parent", "childs"]}
-        if not vntree_meta and "_vntree_meta" in _dct["data"]:
-            _dct["data"].pop("_vntree_meta")
+        _dct = {k:copy.deepcopy(v) for k, v in vars(self).items() if k not in ["parent", "childs"]}
+        if not treemeta and "_treemeta" in _dct["data"]:
+            _dct["data"].pop("_treemeta")
         if recursive and self.childs:
             _dct["childs"] = []
             for _child in self.childs:
-                _dct["childs"].append( _child.to_treedict(recursive=recursive) )
+                _dct["childs"].append( _child.to_treedict(recursive=recursive, treemeta=treemeta) )
         return _dct 
 
 
-    def to_json(self, filepath, default=str):
-        _treedict = self.to_treedict()
+    def to_json(self, filepath, default=str, treemeta=False):
+        _treedict = self.to_treedict(treemeta=treemeta)
         with open(filepath, 'w') as _fh:
             json.dump(_treedict, _fh)
         return True
@@ -569,7 +573,7 @@ class Node:
             return rootnode
 
 
-    def tree_compare(self, othertree, vntree_meta=False):
+    def tree_compare(self, othertree, treemeta=False):
         """Compare the (sub-)tree rooted at `self` with another tree.
 
         `tree_compare` converts the trees being compared into JSON string
@@ -578,14 +582,14 @@ class Node:
 
         :param othertree: the other tree for comparison.
         :type othertree: Node
-        :param vntree_meta: include private vntree metadata in comparison.
-        :type vntree_meta: bool
+        :param treemeta: include private vntree metadata in comparison.
+        :type treemeta: bool
         :returns: similarity of the trees as a number between 0 and 1. 
         :rtype: float 
         """
         return SequenceMatcher(None, 
-                json.dumps(self.to_treedict(vntree_meta=vntree_meta), default=str), 
-                json.dumps(othertree.to_treedict(vntree_meta=vntree_meta), default=str)
+                json.dumps(self.to_treedict(treemeta=treemeta), default=str), 
+                json.dumps(othertree.to_treedict(treemeta=treemeta), default=str)
                 ).ratio()
 
 
@@ -609,7 +613,7 @@ class Node:
         #     return False
         try:
             with open(self._vnpkl_fpath, "wb") as pf:
-                pickle.dump(self._root.to_treedict(), pf) 
+                pickle.dump(self._root.to_treedict(treemeta=True), pf) 
         except Exception as err:
             logger.error("%s.savefile: arg `filepath`=«%s» `self._vnpkl_fpath`=«%s» error: %s" % (self.__class__.__name__, filepath, self._vnpkl_fpath, err))
             return False

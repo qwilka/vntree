@@ -9,29 +9,69 @@ except Exception as err:
     sys.exit(1)
 
 
+from vntree import Node
 
-class DataEditor(Frame):
-    def __init__(self, parent):
-        Frame.__init__(self, parent)
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+
+
+def vn_uri_to_id(ss):
+    _hash = hashlib.md5(ss.encode()).hexdigest()
+    return _hash
+
+
+class tkNode(Node):
+    TreeView = TreeAttr("_vntree_meta")
+
+    def __init__(self, name=None, parent=None, data=None, treedict=None):
+        super().__init__(name, parent, data, treedict)
+
+
+
+    def add_child(self, node):
+        """Add a child node to the current node instance.
+
+        :param node: the child node instance.
+        :type node: Node
+        :returns: The new child node instance.   
+        :rtype: Node 
+        """
+        if not issubclass(node.__class__, Node):
+            raise TypeError("{}.add_child: arg «node»=«{}», type {} not valid.".format(self.__class__.__name__, node, type(node)))
+        self.childs.append(node)
+        node.parent = self
+
+        item = self.TreeView.selection()[0]
+        node_name = askstring("New Child", prompt="Enter the node name", initialvalue="")
+        if not node_name:
+            node_name = "no-name-node"
+        # self.TV.insert(item, 'end', 'LC_'+str(self.TVleafref), 
+        #   text='Load case '+str(self.TVleafref))
+        self.TV_id_count += 1
+        self.TV.insert(item, 'end', 'NODEID_'+str(self.TV_id_count), text=node_name)
+
+        return node  
+
+# class DataEditor(Frame):
+#     def __init__(self, parent):
+#         Frame.__init__(self, parent)
+#         self.grid_columnconfigure(0, weight=1)
+#         self.grid_rowconfigure(0, weight=1)
         
-        canvas = Canvas(self, bg="yellow", bd=10)
-        nrows = 1000
-        ncols = 50
-        wid = 80
-        hei = 20
+#         canvas = Canvas(self, bg="yellow", bd=10)
+#         nrows = 1000
+#         ncols = 50
+#         wid = 80
+#         hei = 20
         
-        ys = 0
-        for ii in range(nrows):
-            xs = 0
-            for jj in range(ncols):
-                canvas.create_rectangle(xs, ys, xs+wid, ys+hei, 
-                outline="#fb0", fill="#fff")
-                xs = xs + wid
-            ys = ys + hei
+#         ys = 0
+#         for ii in range(nrows):
+#             xs = 0
+#             for jj in range(ncols):
+#                 canvas.create_rectangle(xs, ys, xs+wid, ys+hei, 
+#                 outline="#fb0", fill="#fff")
+#                 xs = xs + wid
+#             ys = ys + hei
             
-        canvas.grid(sticky=(N,W,E,S))   # column=0, row=0, 
+#         canvas.grid(sticky=(N,W,E,S))   # column=0, row=0, 
 
 
 
@@ -251,11 +291,11 @@ class MainApp(Frame):
         
         # add Notebook
         self.NB = Notebook(self.PW.f2)
-        self.NB.add(TextViewFrame(self.NB, "this is atest"), text='Sheet_1')
-        self.NB.add(DataEditor(self.NB), text='Sheet_2')
-        self.NB.add(DataEditor(self.NB), text='Sheet_3')
-        self.NB.add(DataEditor(self.NB), text='Sheet_4')
-        self.NB.add(DataEditor(self.NB), text='Sheet_5')
+        self.NB.add(TextViewFrame(self.NB, "tree builder"), text='>>>')
+        # self.NB.add(DataEditor(self.NB), text='Sheet_2')
+        # self.NB.add(DataEditor(self.NB), text='Sheet_3')
+        # self.NB.add(DataEditor(self.NB), text='Sheet_4')
+        # self.NB.add(DataEditor(self.NB), text='Sheet_5')
         #self.NB.add(ttk.Frame(self.NB), text='Sheet_2')
         self.NB.grid(column=0, row=0, sticky=(N,W,E,S))
         self.NB.master.grid_columnconfigure(1, weight=1)
@@ -274,7 +314,7 @@ class MainApp(Frame):
         self.TPM = Menu(self.TV, tearoff=0)
         self.TPM.add_command(label="add child", command=self.onAddChild)
         self.TPM.add_command(label="edit name", command=self.onNodeNameEdit)
-        self.TPM.add_command(label="close menu", command=self.onTPMClose)
+        self.TPM.add_command(label="close menu", command=lambda *args: None) #, command=self.onTPMClose)
         self.TV.bind("<Button-3>", self.showTreePopupMenu)
 
 

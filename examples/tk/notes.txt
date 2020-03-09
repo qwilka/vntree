@@ -1,0 +1,12 @@
+
+https://stackoverflow.com/questions/39458337/is-there-a-way-to-add-close-buttons-to-tabs-in-tkinter-ttk-notebook
+
+embed interpreter
+=================
+https://docs.python.org/3/library/code.html#interactive-console-objects
+https://stackoverflow.com/questions/21811464/how-can-i-embed-a-python-interpreter-frame-in-python-using-tkinter
+https://stackoverflow.com/questions/21603038/python-compiler-connected-to-a-button
+https://stackoverflow.com/questions/15167200/how-do-i-embed-an-ipython-interpreter-into-an-application-running-in-an-ipython
+https://github.com/ipython/ipython/wiki/Trash:-Old-Embedding-Tkinter
+https://ipython.readthedocs.io/en/stable/api/generated/IPython.terminal.embed.html#module-IPython.terminal.embed
+http://ipython.org/ipython-doc/dev/interactive/reference.html#embedding-ipython
