@@ -45,7 +45,7 @@ class NodeAttr:
             _value = instance.data[self.ns].get(self.name, self.initial)
         else:
             #logger.error("%s.__get__ «%s»; ns «%s» not in %s" % (self.__class__.__name__, self.name, self.ns, instance))
-            _value = instance.data.get(self.name, None)
+            _value = instance.data.get(self.name, self.initial)
         return _value
     def __set__(self, instance, value):
         if self.ns:
@@ -74,17 +74,17 @@ class TreeAttr(NodeAttr):
     :param ns: namespace for attribute. `ns=None` for top-level attributes.
     :type ns: str or None
     """
-    def __init__(self, ns=None):
-        super().__init__(ns)
+    def __init__(self, ns="_treemeta", initial=None):
+        super().__init__(ns, initial=initial)
     def __get__(self, instance, owner):
-        _value = super().__get__(instance, owner)
-        if _value is None and instance.parent:
-            _value = getattr(instance.parent, self.name)
+        _value = super().__get__(instance._root, owner)
+        # if _value is None and instance.parent:
+        #     _value = getattr(instance.parent, self.name)
         return _value
     def __set__(self, instance, value):
         if instance is not instance._root: #if instance is not instance.get_rootnode():
             logger.warning("%s.__set__: non-root node «%s» set value «%s»=«%s»" % (self.__class__.__name__, instance.name, self.name, value))
-        super().__set__(instance, value)
+        super().__set__(instance._root, value)
 
 
 
@@ -107,7 +107,7 @@ class Node:
 
 
     def __init__(self, name=None, parent=None, data=None, 
-                treedict=None, vnpkl_fpath=None):
+                treedict=None, vnpkl_fpath=None, nodeid=None):
         if data and isinstance(data, dict):
             #self.data = collections.defaultdict(dict, copy.deepcopy(data))
             self.data = copy.deepcopy(data)
@@ -118,8 +118,11 @@ class Node:
         elif not getattr(self, "name", None) and name is None:
             self.name = ""
         self.childs = []
+        ##print("in Node parent=",parent)
+        ##print("issubclass(parent.__class__, Node)=",issubclass(parent.__class__, Node))
         if parent and issubclass(parent.__class__, Node):
             parent.add_child(self)
+            ##print("in Node self.parent=",self.parent)
         elif parent is None:
             self.parent = None
         else:
@@ -130,7 +133,10 @@ class Node:
             self.from_treedict(treedict)
         if vnpkl_fpath and isinstance(vnpkl_fpath, str):
             self._vnpkl_fpath = vnpkl_fpath
-        self._nodeid = uuid.uuid4().hex
+        if nodeid is None:
+            self._nodeid = uuid.uuid4().hex
+        else:
+            self._nodeid = nodeid
 
 
     def __str__(self):
@@ -349,6 +355,13 @@ class Node:
         else:
             _childnode = _childs[0] 
         return _childnode
+
+
+    def get_node_by_id(self, nodeid):
+        for _n in self:
+            if _n._nodeid == nodeid:
+                return _n
+        
 
 
     def get_node_by_path(self, path):

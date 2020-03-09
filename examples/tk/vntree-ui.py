@@ -1,15 +1,17 @@
+import platform
 import sys
 
 try:
     from tkinter import *
     from tkinter.ttk import *
     from tkinter.simpledialog import askstring
+    from tkinter.scrolledtext import ScrolledText
 except Exception as err:
     print(" ERROR: unable to find required Python module «tkinter» \n", err)
     sys.exit(1)
 
 
-from vntree import Node
+from vntree import Node, TreeAttr
 
 
 
@@ -19,10 +21,20 @@ def vn_uri_to_id(ss):
 
 
 class tkNode(Node):
-    TreeView = TreeAttr("_vntree_meta")
+    TV = TreeAttr("_treemeta")
+    node_count = TreeAttr("_treemeta", initial=0)
 
-    def __init__(self, name=None, parent=None, data=None, treedict=None):
+    def __init__(self, name=None, parent=None, data=None, treedict=None, TV=None):
+        print("NEW NODE parent=", parent)
         super().__init__(name, parent, data, treedict)
+        print("self.node_count=",self.node_count)
+        self._nodeid="N_"+str(self.node_count)
+        self.node_count += 1
+        print("self.data=",self.data)
+        if TV:
+            self.TV = TV
+        if parent is None:
+            self.add_child(self)
 
 
 
@@ -34,19 +46,34 @@ class tkNode(Node):
         :returns: The new child node instance.   
         :rtype: Node 
         """
-        if not issubclass(node.__class__, Node):
-            raise TypeError("{}.add_child: arg «node»=«{}», type {} not valid.".format(self.__class__.__name__, node, type(node)))
-        self.childs.append(node)
-        node.parent = self
+        if self is node:
+            parent_id = ""
+            _nodeid="N_"+str(0)
+        else:
+            if not issubclass(node.__class__, Node):
+                raise TypeError("{}.add_child: arg «node»=«{}», type {} not valid.".format(self.__class__.__name__, node, type(node)))
+            self.childs.append(node)
+            node.parent = self
+            parent_id = self.TV.selection()[0]
+            _nodeid="N_"+str(self.node_count)
+        # parent = self.rootnode.get_node_by_id(parent_id)
+        # if parent is None:
+        #     return None
 
-        item = self.TreeView.selection()[0]
-        node_name = askstring("New Child", prompt="Enter the node name", initialvalue="")
-        if not node_name:
-            node_name = "no-name-node"
-        # self.TV.insert(item, 'end', 'LC_'+str(self.TVleafref), 
-        #   text='Load case '+str(self.TVleafref))
-        self.TV_id_count += 1
-        self.TV.insert(item, 'end', 'NODEID_'+str(self.TV_id_count), text=node_name)
+        # print("self.TV.insert node._nodeid", node._nodeid)
+        # print("self.TV.insert node.data", node.data)
+        
+        self.TV.insert(parent_id, 'end', _nodeid, text=node.name)
+
+        # parent_id = self.TreeView.selection()[0]
+        # node_name = askstring("New Child", prompt="Enter the node name", initialvalue="")
+        # if not node_name:
+        #     node_name = "no-name-node"
+        # # self.TV.insert(item, 'end', 'LC_'+str(self.TVleafref), 
+        # #   text='Load case '+str(self.TVleafref))
+        # #self.node_count += 1
+        
+        # self.TreeView.insert(parent_id, 'end', self._nodeid, text=self.name)
 
         return node  
 
@@ -75,13 +102,44 @@ class tkNode(Node):
 
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+class PyText(ScrolledText):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.pack(expand=YES, fill=BOTH)
 
+        if platform.system() == 'Windows':
+            font = ('Courier New',10)
+        else:
+            font = 'monospace 10'  # "{Lucida Sans Typewriter} 12"
+
+        # self.cfg = dict(borderwidth=0,
+        #     font=font,
+        #     foreground="black",
+        #     background="green",
+        #     insertbackground="yellow", 
+        #     selectforeground="blue", 
+        #     selectbackground="#008000",
+        #     wrap=WORD, 
+        #     width=64,
+        #     undo=True)
+        self.configure(borderwidth=0,
+            font=font,
+            foreground="black",
+            background="green",
+            insertbackground="yellow", 
+            selectforeground="blue", 
+            selectbackground="#008000",
+            wrap=WORD, 
+            width=64,
+            undo=True)
 
 ###############################################################################
 class TextViewFrame(Frame):
 
     def __init__(self, parent=None, text='', editfile=None, cfg=None):
-        Frame.__init__(self, parent)
+        #Frame.__init__(self, parent, wid)
+        super().__init__(parent)
         self.parent = parent
         self.pack(expand=YES, fill=BOTH)
         #self.modified = property(self.text.edit_modified, self.text.edit_modified)
@@ -94,20 +152,37 @@ class TextViewFrame(Frame):
         self.ftypes = [('All files',     '*'),                 # for file open dialog
               ('Text files',   '.txt'),               # customize in subclass
               ('Python files', '.py')]                # or set in each instance
+
+        if platform.system() == 'Windows':
+            font = ('Courier New',10)
+        else:
+            font = 'monospace 10'  # "{Lucida Sans Typewriter} 12"
+
         if cfg:
             self.cfg = cfg
         else:
             self.cfg = dict(borderwidth=0,
-                font="{Lucida Sans Typewriter} 12",
-                foreground="black",
-                background="white",
+                font=font,
+                foreground="white",
+                background="black",
                 insertbackground="yellow", 
                 selectforeground="green", 
                 selectbackground="#008000",
                 wrap=WORD, 
                 width=64,
                 undo=True)
-        self.makeView()
+        #self.makeView()
+        self.text = ScrolledText(self, relief=SUNKEN, wrap=WORD)
+        
+        #self.master.pack(side=LEFT, expand=YES, fill=BOTH)
+        #self.pack(side=LEFT, expand=YES, fill=BOTH)
+        #self.text.pack(side=LEFT, expand=YES, fill=BOTH)
+        self.text.pack(expand=YES, fill=BOTH)
+
+        # self.text.grid(column=0, row=0, sticky=(N,W,E,S))
+        # self.text.master.grid_columnconfigure(0, weight=1)
+        # self.text.master.grid_rowconfigure(0, weight=1)
+
         self.text.config(**self.cfg)
         if editfile:
             """self.document = TextDocument(editfile)
@@ -292,19 +367,21 @@ class MainApp(Frame):
         # add Notebook
         self.NB = Notebook(self.PW.f2)
         self.NB.add(TextViewFrame(self.NB, "tree builder"), text='>>>')
-        # self.NB.add(DataEditor(self.NB), text='Sheet_2')
+        self.NB.add(PyText(self.NB), text='Sheet_2')
         # self.NB.add(DataEditor(self.NB), text='Sheet_3')
         # self.NB.add(DataEditor(self.NB), text='Sheet_4')
         # self.NB.add(DataEditor(self.NB), text='Sheet_5')
         #self.NB.add(ttk.Frame(self.NB), text='Sheet_2')
-        self.NB.grid(column=0, row=0, sticky=(N,W,E,S))
-        self.NB.master.grid_columnconfigure(1, weight=1)
-        self.NB.master.grid_rowconfigure(0, weight=1)
+        # self.NB.grid(column=0, row=0, sticky=(N,W,E,S))
+        # self.NB.master.grid_columnconfigure(1, weight=1)
+        # self.NB.master.grid_rowconfigure(0, weight=1)
+        self.NB.pack(expand=YES, fill=BOTH)
         
         # add Treeview
         self.TV_id_count = 0
         self.TV = Treeview(self.PW.f1)
-        self.TV.insert('', 'end', 'NODEID_'+str(self.TV_id_count), text='root-node')
+        self.rootnode = tkNode("root-node", TV=self.TV)
+        #self.TV.insert('', 'end', self.rootnode._nodeid, text=self.rootnode.name)
         self.TV.grid(column=0, row=0, sticky='nsew')
         self.TV.master.grid_columnconfigure(0, weight=1)
         self.TV.master.grid_rowconfigure(0, weight=1)
@@ -354,15 +431,20 @@ class MainApp(Frame):
 
 
     def onAddChild(self):
-        item = self.TV.selection()[0]
+
+        parent_id = self.TV.selection()[0]
+        parent = self.rootnode.get_node_by_id(parent_id)
+        print("parent_id=",parent_id)
+        print("self.rootnode.data=",self.rootnode.data)
+        print("found parent:", parent.name)
+        if parent is None:
+            return None
         node_name = askstring("New Child", prompt="Enter the node name", initialvalue="")
         if not node_name:
             node_name = "no-name-node"
-        # self.TV.insert(item, 'end', 'LC_'+str(self.TVleafref), 
-        #   text='Load case '+str(self.TVleafref))
-        self.TV_id_count += 1
-        self.TV.insert(item, 'end', 'NODEID_'+str(self.TV_id_count), text=node_name)
-        #self.NB.add(ttk.Frame(self.NB), text='dummy name')       
+        newnode = tkNode(node_name, parent)
+        #parent.add_child()
+        #self.TV.insert(parent_id, 'end', newnode._nodeid, text=newnode.name)      
 
     def onTPMClose(self):
         # self.TPM.destroy()

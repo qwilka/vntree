@@ -7,7 +7,7 @@ from vntree import Node
 aparser = argparse.ArgumentParser()
 aparser.add_argument("case", help="select example case", 
     nargs='?', default="basic1",
-    choices=["basic1", "basic2", "treedict", "JSON", "YAML",
+    choices=["basic1", "basic2", "world", "treedict", "JSON", "YAML",
     "top-down", "bottom-up"])
 aparser.add_argument("--logging", help="select logging level", 
     default="ERROR",
@@ -45,6 +45,7 @@ if args.case == "basic1":
     Node("great grand-child", gc3)
     print(rootnode.to_texttree())
 
+
 elif args.case == "basic2":
     rootnode = Node("The Root Node")    # the root node has no parent
     Node("first child", rootnode)       # create a child node
@@ -54,6 +55,23 @@ elif args.case == "basic2":
     Node(parent=c2)       # another grandchild node, name not specified
     c1 = rootnode.get_node_by_path("/rootnode/first child")
     c1.add_child(Node())  # grafting an external node into the tree
+    print(rootnode.to_texttree())
+
+
+elif args.case == "world":
+    rootnode = Node('The World', data={"population":7762609412}) 
+    europe = Node('Europe', rootnode)
+    Node('Belgium', europe, {"capital":"Brussels","population":11515793})
+    europe.add_child( Node('Greece', data={"capital":"Athens","population":10768477}) )
+    scandinavia = Node('Scandinavia', europe)
+    europe.add_child( Node('Spain', data={"capital":"Madrid","population":46733038}) )
+    denmark = Node('Denmark', scandinavia, {"capital":"Copenhagen","population":5822763})
+    scandinavia.add_child( Node('Sweden', data={"capital":"Stockholm","population":10302984}) )
+    Node('Norway', scandinavia, {"capital":"Oslo","population":5421241})
+    Node('Faroe Islands', denmark)
+    denmark.add_child( Node("Greenland") )
+    samerica = Node('South America', rootnode)
+    Node('Chile', samerica, {"capital":"Santiago","population":17574003})
     print(rootnode.to_texttree())
 
 elif args.case == "treedict":
