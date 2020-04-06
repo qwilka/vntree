@@ -21,6 +21,13 @@ GUI
 ====
 https://github.com/dmnfarrell/pandastable
 
+vega
+====
+https://osintframework.com/ vega tree
+https://www.visualcapitalist.com/100-most-spoken-languages/
+https://www.linkedin.com/posts/marcellvollmer_ranked-the-100-most-spoken-languages-around-activity-6634726373862715392-25SM
+https://word.tips/100-most-spoken-languages/
+
 
 dictionary
 =============
@@ -36,3 +43,7 @@ https://www.freevector.com/map-of-europe
 Python
 ======
 https://stackoverflow.com/questions/1436703/difference-between-str-and-repr
+
+
+
+

@@ -16,3 +16,9 @@ http://ipython.org/ipython-doc/dev/interactive/reference.html#embedding-ipython
 https://github.com/Dvlv/Tkinter-By-Example
 
 https://stackoverflow.com/questions/21811464/how-can-i-embed-a-python-interpreter-frame-in-python-using-tkinter
+https://github.com/zargit/tkinter-json-editor/blob/master/JsonEditor.py
+https://stackoverflow.com/questions/15023333/simple-tool-library-to-visualize-huge-python-dict
+
+https://gist.github.com/jul/e9132abe8b5aeea573917191591fb90b  json python-tk editor with json indentation and validation
+
+

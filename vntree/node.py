@@ -103,11 +103,11 @@ class Node:
     YAML_setup = False
     name = NodeAttr()
     _nodeid = NodeAttr("_treemeta")
-    _vnpkl_fpath = TreeAttr("_treemeta")
+    _vntree_fpath = TreeAttr("_treemeta")
 
 
     def __init__(self, name=None, parent=None, data=None, 
-                treedict=None, vnpkl_fpath=None, nodeid=None):
+                treedict=None, fpath=None, nodeid=None):
         if data and isinstance(data, dict):
             #self.data = collections.defaultdict(dict, copy.deepcopy(data))
             self.data = copy.deepcopy(data)
@@ -131,8 +131,8 @@ class Node:
             self.name = str(name(self))
         if treedict and isinstance(treedict, dict):
             self.from_treedict(treedict)
-        if vnpkl_fpath and isinstance(vnpkl_fpath, str):
-            self._vnpkl_fpath = vnpkl_fpath
+        if fpath and isinstance(fpath, str):
+            self._vntree_fpath = fpath
         if nodeid is None:
             self._nodeid = uuid.uuid4().hex
         else:
@@ -606,29 +606,36 @@ class Node:
                 ).ratio()
 
 
-    def savefile(self, filepath=None):
+    def savefile(self, filepath=None, enforceext=False, protocol=4):
         """Save (dump) the tree in a pickle file.
 
-        Note that this method saves the complete tree even when invoked on
+        Note: This method saves the complete tree even when invoked on
         a non-root node.
-        It is recommended to use the extension `.vnpkl` for this type of file.
+        Note: It is recommended to use the extension `.vn3` for this type of file.
 
         :param filepath: the file path for the pickle file. 
-            If `filepath=None` use `self._vnpkl_fpath` attribute, if set.
-        :type filepath: str or None        
+            If `filepath=None` use `self._vntree_fpath` attribute, if set.
+        :type filepath: str or None   
+        :param enforceext: if True, enforce filename extension .vn3
+        :type enforceext: bool    
+        :param protocol: pickle protocol version number
+        :type protocol: int   
         :returns: `True` if successful. 
         :rtype: bool
         """
+        froot, fext = os.path.splitext(filepath)
+        if enforceext and fext != ".vn3":
+            filepath = froot + ".vn3"
         if filepath:
-            self._vnpkl_fpath = os.path.abspath(filepath)
+            self._vntree_fpath = os.path.abspath(filepath)
         # if not _pfpath:
         #     logger.error("%s.save: «%s» file path «%s» not valid." % (self.__class__.__name__, self.name, _pfpath))
         #     return False
         try:
-            with open(self._vnpkl_fpath, "wb") as pf:
-                pickle.dump(self._root.to_treedict(treemeta=True), pf) 
+            with open(self._vntree_fpath, "wb") as pf:
+                pickle.dump(self._root.to_treedict(treemeta=True), pf, protocol=protocol) 
         except Exception as err:
-            logger.error("%s.savefile: arg `filepath`=«%s» `self._vnpkl_fpath`=«%s» error: %s" % (self.__class__.__name__, filepath, self._vnpkl_fpath, err))
+            logger.error("%s.savefile: arg `filepath`=«%s» `self._vntree_fpath`=«%s» error: %s" % (self.__class__.__name__, filepath, self._vntree_fpath, err))
             return False
         return True       
 
@@ -649,7 +656,7 @@ class Node:
             with open(filepath, "rb") as pf:
                 pkldata = pickle.load(pf)
             rootnode = cls(treedict=pkldata)
-            rootnode._vnpkl_fpath = os.path.abspath(filepath)
+            rootnode._vntree_fpath = os.path.abspath(filepath)
         except Exception as err:
             logger.error("%s.openfile: data in file «%s» not valid: %s" % (cls.__name__, filepath, err))
             return False
@@ -662,10 +669,6 @@ class Node:
             fields = loader.construct_mapping(yamlnode, deep=True)
             return  cls(**fields)
         yaml.SafeLoader.add_constructor('!'+cls.__name__, yamlnode_constructor)
-        # def yamlnode_representer(dumper, data):
-        #     rep = '!Node'
-        #     return dumper.represent_scalar('!Node', '%sd%s' % data)
-        # yaml.add_representer(cls, yamlnode_representer)
        
 
     @classmethod
@@ -704,37 +707,47 @@ class Node:
         return yamltree_root
 
 
-    def tree2yaml(self):
-        # if not self.__class__.YAML_setup:
-        #     self.__class__.setup_yaml()
-        #     self.__class__.YAML_setup = True 
+    def tree2yaml(self, fpath=None, treemeta=False):
+        """Create YAML format representation of the tree.
+
+        :param fpath: an optional filepath for saving the YAML.
+        :type fpath: str or None
+        :param treemeta: if True, retain node _treemeta.
+        :type treemeta: bool
+        :returns: YAML representation of the tree (fpath=None),
+            or the absolute filepath if `fpath` is specified. 
+        :rtype: str 
+        """
         def make_anchor(node):
-            # if node._root is node:
-            #     anchor = "root"
-            # else:
             anchor = "coord"
             for _c in node._coord:
                 anchor += "-" + str(_c)
             return anchor
-        yltree = "# dummy \n"
+        yltree = "# «vntree» YAML format, see https://github.com/qwilka/vntree\n"
         for _n in self:
             _ncopy = _n.copy()
             delattr(_ncopy, "childs")
             delattr(_ncopy, "parent")
-            # if _n.parent:
-            #     _ncopy.parent = "*" + make_anchor(_n.parent)
+            if not treemeta and "_treemeta" in _ncopy.data:
+                del _ncopy.data["_treemeta"]
             _yl = yaml.dump(_ncopy, default_flow_style=False)
             _n_yl = '!'+_n.__class__.__name__  + " &" + make_anchor(_n)
             if _n.parent:
                 _n_yl += "\nparent: " + "*" + make_anchor(_n.parent)
-            # else:
-            #     _n_yl += "\n"
             _n_yl += _yl[_yl.index("\n"):]
             yltree += _n_yl
         yltree = textwrap.indent(yltree, "  ")
         yltree = yltree.strip()
         yltree = yltree.replace("\n  !", "\n- !")
-        return yltree
+        retVal = yltree
+        if fpath:
+            _abspath = os.path.abspath(fpath) 
+            # _dir, _fname = os.path.split(_abspath)
+            # if os.path.isdir(_dir):
+            with open(_abspath, 'w') as fh:
+                fh.write(yltree)
+            retVal = _abspath
+        return retVal
 
 
 
