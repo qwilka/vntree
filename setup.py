@@ -30,5 +30,6 @@ setup(
     extras_require={
         "mongo": "pymongo",
         "yaml":  "pyyaml",
+        "sqlite": "sqlitedict"
     },
 )

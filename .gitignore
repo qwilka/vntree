@@ -1,6 +1,6 @@
 .vscode/
 *.vn3
-theworld.yaml
+*.vn4
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,0 +1,67 @@
+# «vntree» YAML format, see https://github.com/qwilka/vntree
+- !Node &coord
+  data:
+    name: The World
+    population: 7762609412
+- !Node &coord-0
+  parent: *coord
+  data:
+    name: Europe
+- !Node &coord-0-0
+  parent: *coord-0
+  data:
+    capital: Brussels
+    name: Belgium
+    population: 11515793
+- !Node &coord-0-1
+  parent: *coord-0
+  data:
+    capital: Athens
+    name: Greece
+    population: 10768477
+- !Node &coord-0-2
+  parent: *coord-0
+  data:
+    name: Scandinavia
+- !Node &coord-0-2-0
+  parent: *coord-0-2
+  data:
+    capital: Copenhagen
+    name: Denmark
+    population: 5822763
+- !Node &coord-0-2-0-0
+  parent: *coord-0-2-0
+  data:
+    name: Faroe Islands
+- !Node &coord-0-2-0-1
+  parent: *coord-0-2-0
+  data:
+    name: Greenland
+- !Node &coord-0-2-1
+  parent: *coord-0-2
+  data:
+    capital: Stockholm
+    name: Sweden
+    population: 10302984
+- !Node &coord-0-2-2
+  parent: *coord-0-2
+  data:
+    capital: Oslo
+    name: Norway
+    population: 5421241
+- !Node &coord-0-3
+  parent: *coord-0
+  data:
+    capital: Madrid
+    name: Spain
+    population: 46733038
+- !Node &coord-1
+  parent: *coord
+  data:
+    name: South America
+- !Node &coord-1-0
+  parent: *coord-1
+  data:
+    capital: Santiago
+    name: Chile
+    population: 17574003
