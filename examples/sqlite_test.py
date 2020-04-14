@@ -226,5 +226,5 @@ elif args.case == "open":
     if hasattr(args, "fpath") and args.fpath is None:
         raise ValueError("-f «filepath» must specify a valid file path") 
     rootnode = Node.openfile(args.fpath) 
-    #rootnode.show()
+    rootnode.show()
 

@@ -1,7 +1,8 @@
 """
 Copyright © 2018-2020 Stephen McEntee
 Licensed under the MIT license. 
-See «vntree» LICENSE file for details https://github.com/qwilka/vntree/blob/master/LICENSE
+See «vntree» LICENSE file for details:
+https://github.com/qwilka/vntree/blob/master/LICENSE
 
 References:
 https://github.com/RaRe-Technologies/sqlitedict 
@@ -36,8 +37,8 @@ class SqliteNode(Node):
     def __init__(self, name=None, parent=None, data=None, 
                 treedict=None, fpath=None, nodeid=None):
         super().__init__(name, parent, data, treedict, fpath, nodeid)
-        if self._vntree_fpath and os.path.isfile(self._vntree_fpath):
-            self.insert_data()
+        # if self._vntree_fpath and os.path.isfile(self._vntree_fpath):
+        #     self.insert_data()
 
 
     def get_data(self, *keys):
@@ -51,9 +52,9 @@ class SqliteNode(Node):
         :type keys: str 
         :returns: the value accessed by `keys` in `data`. 
         """
-        _loaded = self.data["_treemeta"].get("loaded", False)
-        if _loaded is False:
-            self.load_data()
+        # _loaded = self.data["_treemeta"].get("loaded", False)
+        # if _loaded is False:
+        #     self.load_data()
         if not keys:
             _val = self.data
         _datadict = self.data
@@ -68,12 +69,38 @@ class SqliteNode(Node):
         return _val
 
 
+    def set_data(self, *keys, value):
+        """Set a value in the instance `data` dict.
+
+        :param keys: the `data` dict keys referencing the value in the `data` dict.
+        :type keys: str 
+        :param value: the value to be set in the `data` dict. Note that
+            `value` is a keyword-only argument.
+        :returns: `True` if successful. 
+        """
+        _datadict = self.data
+        for ii, _key in enumerate(keys):
+            if ii==len(keys)-1:
+                _datadict[_key] = value
+            else:
+                # if _key not in _datadict:
+                #     _datadict[_key] = {}
+                # _datadict = _datadict[_key]
+                _datadict = _datadict.setdefault(_key, {})
+        return True
+
+
+
     def insert_data(self):
-        with sqlitedict.SqliteDict(self._vntree_fpath) as _vndict:
+        tablename = self._root.get_data("_treemeta", "tablename")
+        #print(f"insert_data tablename={tablename} self._nodeid={self._nodeid}")
+        with sqlitedict.SqliteDict(self._vntree_fpath, tablename=tablename) as _vndict:
             _vndict[self._nodeid] = self.data
+            _vndict.commit()
 
     def load_data(self):
-        with sqlitedict.SqliteDict(self._vntree_fpath) as _vndict:
+        tablename = self._root.data["_treemeta"]["tablename"]
+        with sqlitedict.SqliteDict(self._vntree_fpath, tablename=tablename) as _vndict:
             _data = copy.deepcopy(_vndict[self._nodeid])
             _data.update(self.data)
             self.data.update(_data)
@@ -108,7 +135,7 @@ class SqliteNode(Node):
 
 
 
-    def savefile(self, fpath=None, enforceext=False):
+    def savefile(self, fpath=None, enforceext=False, tablename='vntree0', flag='c'):
         """Save (dump) the tree in a sqlite3 file.
 
         Note: This method saves the complete tree even when invoked on
@@ -131,12 +158,14 @@ class SqliteNode(Node):
                     _fpath = froot + ".vn4"
         else:
             _fpath = self._vntree_fpath
+        self._root.set_data("_treemeta", "tablename", value=tablename)
         try:
             #with sqlitedict.SqliteDict(self._vntree_fpath, encode=sqlitedict_encode, decode=sqlitedict_decode) as _vndict:
             #print(f"_fpath={_fpath}")
-            with sqlitedict.SqliteDict(_fpath) as _vndict:
+            with sqlitedict.SqliteDict(_fpath, tablename=tablename, flag=flag) as _vndict:
                 newdata = self._root.to_skdict()
                 newdata["data"]["_treemeta"]["_vntree_fpath"] = _fpath
+                newdata["data"]["_treemeta"]["tablename"] = tablename
                 # print(f"newdata={newdata}")
                 # if "_vntree" in _vndict:
                 #     del _vndict["_vntree"]
@@ -153,7 +182,7 @@ class SqliteNode(Node):
 
 
     @classmethod
-    def openfile(cls, fpath):
+    def openfile(cls, fpath, tablename='vntree0', flag='c'):
         """Class method that opens (load) a vn4 (sqlite) file.
 
         :param fpath: the file path for the vn4 file. 
@@ -166,7 +195,7 @@ class SqliteNode(Node):
             return False
         try:
             #with sqlitedict.SqliteDict(fpath, encode=sqlitedict_encode, decode=sqlitedict_decode) as _vndict:
-            with sqlitedict.SqliteDict(fpath) as _vndict:
+            with sqlitedict.SqliteDict(fpath, tablename=tablename, flag=flag) as _vndict:
                 print(f"_vndict={_vndict}")
                 pkldata = _vndict["_vntree"]
                 #rootnode = _vndict["_vntree"] 
@@ -177,5 +206,7 @@ class SqliteNode(Node):
         except Exception as err:
             logger.error("%s.openfile: data in file «%s» not valid: %s" % (cls.__name__, fpath, err))
             return False
+        for _n in rootnode:
+            _n.load_data()
         return rootnode 
 

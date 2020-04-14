@@ -133,10 +133,11 @@ class Node:
             self.from_treedict(treedict)
         if fpath and isinstance(fpath, str):
             self._vntree_fpath = fpath
-        if nodeid is None:
-            self._nodeid = uuid.uuid4().hex
-        else:
-            self._nodeid = nodeid
+        if self._nodeid is None:
+            if nodeid is None:
+                self._nodeid = uuid.uuid4().hex
+            else:
+                self._nodeid = nodeid
 
 
     def __str__(self):
@@ -591,7 +592,7 @@ class Node:
 
         `tree_compare` converts the trees being compared into JSON string
         representations, and uses `difflib.SequenceMatcher().ratio()` to
-        calculate a measure of the similarity of the strings.
+        calculate the similarity metric.
 
         :param othertree: the other tree for comparison.
         :type othertree: Node
