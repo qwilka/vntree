@@ -26,6 +26,26 @@ except ImportError as err:
     yaml_imported = False
 
 
+# wrt: https://github.com/python/cpython/blob/3.8/Lib/inspect.py
+class _empty:
+    """Marker object for undefined value.
+    Used in pflacs: PflacsParam.empty"""
+
+
+# https://docs.python.org/3/library/json.html
+class VntreeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if obj is _empty:
+            return {str(_empty):True}
+        return json.JSONEncoder.default(self, obj)
+
+def as_vntree(obj):
+    if isinstance(obj, dict) and str(_empty) in obj:
+        return _empty
+    return obj
+
+
+
 class NodeAttr:
     """Descriptor class for node attributes. 
     
@@ -562,11 +582,14 @@ class Node:
         return _dct 
 
 
-    def to_json(self, filepath, default=str, treemeta=False):
+    def to_json(self, filepath=None, default=None, treemeta=False):
         _treedict = self.to_treedict(treemeta=treemeta)
-        with open(filepath, 'w') as _fh:
-            json.dump(_treedict, _fh)
-        return True
+        if filepath is None:
+            return json.dumps(_treedict, default=default, cls=VntreeEncoder)
+        else:
+            with open(filepath, 'w') as _fh:
+                json.dump(_treedict, _fh, default=default, cls=VntreeEncoder)
+            return os.path.abspath(filepath)
 
 
     @classmethod
@@ -576,11 +599,11 @@ class Node:
         if isinstance(filepath, str) and os.path.isfile(filepath):
             try:
                 with open(filepath, 'r') as _fh:
-                    _treedict = json.load(_fh)
+                    _treedict = json.load(_fh, object_hook=as_vntree)
             except Exception as err: 
-                pass
+                logger.warning("%s.from_json: cannot open «filepath»=«%s», %s." % (cls.__name__, filepath, err))
         if not _treedict:
-            logger.warning("%s.from_json: cannot open «filepath»=«%s», %s." % (cls.__name__, filepath, err))
+            #logger.warning("%s.from_json: cannot open «filepath»=«%s», %s." % (cls.__name__, filepath, err))
             return False
         else:
             rootnode = cls(treedict=_treedict)

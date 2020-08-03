@@ -12,7 +12,7 @@ __email__ = "stephenmce@gmail.com"
 __description__ = """«vntree» is a simple tree data structure in Python."""
 __url__ = "https://github.com/qwilka/vntree"
 
-from .node import Node, NodeAttr, TreeAttr
+from .node import Node, NodeAttr, TreeAttr, _empty
 
 
 try:

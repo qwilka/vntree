@@ -45,5 +45,8 @@ Python
 https://stackoverflow.com/questions/1436703/difference-between-str-and-repr
 
 
-
+Sqlite
+======
+https://github.com/RaRe-Technologies/sqlitedict 
+https://towardsdatascience.com/do-you-know-python-has-a-built-in-database-d553989c87bd  2020-07
 
