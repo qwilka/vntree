@@ -26,23 +26,23 @@ except ImportError as err:
     yaml_imported = False
 
 
-# wrt: https://github.com/python/cpython/blob/3.8/Lib/inspect.py
-class _empty:
-    """Marker object for undefined value.
-    Used in pflacs: PflacsParam.empty"""
+# # wrt: https://github.com/python/cpython/blob/3.8/Lib/inspect.py
+# class _empty:
+#     """Marker object for undefined value.
+#     Used in pflacs: PflacsParam.empty"""
 
 
-# https://docs.python.org/3/library/json.html
-class VntreeEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if obj is _empty:
-            return {str(_empty):True}
-        return json.JSONEncoder.default(self, obj)
+# # https://docs.python.org/3/library/json.html
+# class VntreeEncoder(json.JSONEncoder):
+#     def default(self, obj):
+#         if obj is _empty:
+#             return {str(_empty):True}
+#         return json.JSONEncoder.default(self, obj)
 
-def as_vntree(obj):
-    if isinstance(obj, dict) and str(_empty) in obj:
-        return _empty
-    return obj
+# def as_vntree(obj):
+#     if isinstance(obj, dict) and str(_empty) in obj:
+#         return _empty
+#     return obj
 
 
 
@@ -582,26 +582,34 @@ class Node:
         return _dct 
 
 
-    def to_json(self, filepath=None, default=None, treemeta=False):
+    def to_json(self, filepath=None, default=None, treemeta=False, cls=None):
         _treedict = self.to_treedict(treemeta=treemeta)
         if filepath is None:
-            return json.dumps(_treedict, default=default, cls=VntreeEncoder)
+            #return json.dumps(_treedict, default=default, cls=VntreeEncoder)
+            return json.dumps(_treedict, default=default, cls=cls)
         else:
             with open(filepath, 'w') as _fh:
-                json.dump(_treedict, _fh, default=default, cls=VntreeEncoder)
+                #json.dump(_treedict, _fh, default=default, cls=VntreeEncoder)
+                json.dump(_treedict, _fh, default=default, cls=cls)
             return os.path.abspath(filepath)
 
 
     @classmethod
-    def from_json(cls, filepath):
+    def from_json(cls, filepath, object_hook=None):
         err = ""
         _treedict = None
         if isinstance(filepath, str) and os.path.isfile(filepath):
             try:
                 with open(filepath, 'r') as _fh:
-                    _treedict = json.load(_fh, object_hook=as_vntree)
+                    #_treedict = json.load(_fh, object_hook=as_vntree)
+                    _treedict = json.load(_fh, object_hook=object_hook)
             except Exception as err: 
                 logger.warning("%s.from_json: cannot open «filepath»=«%s», %s." % (cls.__name__, filepath, err))
+        elif isinstance(filepath, str):
+            try:
+                _treedict = json.loads(filepath, object_hook=object_hook)
+            except Exception as err: 
+                logger.warning("%s.from_json: does not appear to be valid JSON «%s», %s." % (cls.__name__, filepath[:100], err))
         if not _treedict:
             #logger.warning("%s.from_json: cannot open «filepath»=«%s», %s." % (cls.__name__, filepath, err))
             return False
