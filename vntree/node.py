@@ -13,6 +13,7 @@ import os
 import pathlib 
 import pickle
 import textwrap
+#from typing_extensions import Concatenate
 import uuid
 
 
@@ -28,8 +29,7 @@ except ImportError as err:
 
 # # wrt: https://github.com/python/cpython/blob/3.8/Lib/inspect.py
 # class _empty:
-#     """Marker object for undefined value.
-#     Used in pflacs: PflacsParam.empty"""
+#     """Marker object for undefined value."""
 
 
 # # https://docs.python.org/3/library/json.html
@@ -94,7 +94,7 @@ class TreeAttr(NodeAttr):
     :param ns: namespace for attribute. `ns=None` for top-level attributes.
     :type ns: str or None
     """
-    def __init__(self, ns="_treemeta", initial=None):
+    def __init__(self, ns="_vntree", initial=None):
         super().__init__(ns, initial=initial)
     def __get__(self, instance, owner):
         _value = super().__get__(instance._root, owner)
@@ -122,8 +122,8 @@ class Node:
     """
     YAML_setup = False
     name = NodeAttr()
-    _nodeid = NodeAttr("_treemeta")
-    _vntree_fpath = TreeAttr("_treemeta")
+    _nodeid = NodeAttr("_vntree")
+    _vntree_fpath = TreeAttr("_vntree")
 
 
     def __init__(self, name=None, parent=None, data=None, 
@@ -300,6 +300,7 @@ class Node:
         _datadict = self.data
         for _key in keys:
             _val = _datadict.get(_key, None)
+            #_val = _datadict.get(_key, _empty)
             if isinstance(_val, dict):
                 _datadict = _val
             else:
@@ -570,20 +571,24 @@ class Node:
                 #self.childs.append( self.__class__(parent=self, treedict=_childdict) )
                 self.__class__(parent=self, treedict=_childdict)
 
-    def to_treedict(self, recursive=True, treemeta=False):
+
+    def to_treedict(self, recursive=True, treemeta=False, dataonly=False):
         # NOTE: replace vars(self) with self.__dict__ ( and self.__class__.__dict__ ?)
-        _dct = {k:copy.deepcopy(v) for k, v in vars(self).items() if k not in ["parent", "childs"]}
-        if not treemeta and "_treemeta" in _dct["data"]:
-            _dct["data"].pop("_treemeta")
+        if dataonly:
+            _dct = {"data": copy.deepcopy(self.data)}
+        else:
+            _dct = {k:copy.deepcopy(v) for k, v in vars(self).items() if k not in ["parent", "childs"]}
+        if not treemeta and "_vntree" in _dct["data"]:
+            _dct["data"].pop("_vntree")
         if recursive and self.childs:
             _dct["childs"] = []
             for _child in self.childs:
-                _dct["childs"].append( _child.to_treedict(recursive=recursive, treemeta=treemeta) )
+                _dct["childs"].append( _child.to_treedict(recursive=recursive, treemeta=treemeta, dataonly=dataonly) )
         return _dct 
 
 
-    def to_json(self, filepath=None, default=None, treemeta=False, cls=None):
-        _treedict = self.to_treedict(treemeta=treemeta)
+    def to_json(self, filepath=None, default=None, treemeta=False, dataonly=False, cls=None):
+        _treedict = self.to_treedict(treemeta=treemeta, dataonly=dataonly)
         if filepath is None:
             #return json.dumps(_treedict, default=default, cls=VntreeEncoder)
             return json.dumps(_treedict, default=default, cls=cls)
@@ -744,7 +749,7 @@ class Node:
 
         :param fpath: an optional filepath for saving the YAML.
         :type fpath: str or None
-        :param treemeta: if True, retain node _treemeta.
+        :param treemeta: if True, retain node metadata _vntree.
         :type treemeta: bool
         :returns: YAML representation of the tree (fpath=None),
             or the absolute filepath if `fpath` is specified. 
@@ -760,8 +765,8 @@ class Node:
             _ncopy = _n.copy()
             delattr(_ncopy, "childs")
             delattr(_ncopy, "parent")
-            if not treemeta and "_treemeta" in _ncopy.data:
-                del _ncopy.data["_treemeta"]
+            if not treemeta and "_vntree" in _ncopy.data:
+                del _ncopy.data["_vntree"]
             _yl = yaml.dump(_ncopy, default_flow_style=False)
             _n_yl = '!'+_n.__class__.__name__  + " &" + make_anchor(_n)
             if _n.parent:

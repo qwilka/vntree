@@ -50,3 +50,16 @@ Sqlite
 https://github.com/RaRe-Technologies/sqlitedict 
 https://towardsdatascience.com/do-you-know-python-has-a-built-in-database-d553989c87bd  2020-07
 
+Javascript
+============
+https://stackoverflow.com/questions/8640823/what-javascript-tree-data-structures-are-available
+https://www.w3schools.com/howto/howto_js_treeview.asp
+https://github.com/afiore/arboreal
+https://github.com/KristianAbrahamsen/tree-util
+https://github.com/aaronj1335/t-js
+http://jnuno.com/tree-model-js/
+https://stackoverflow.com/questions/12831746/javascript-building-a-hierarchical-tree/58136016#58136016
+https://github.com/youngthejames/jupyterlab_filetree
+
+
+
