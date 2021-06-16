@@ -1,5 +1,5 @@
 """
-Copyright © 2018-2020 Stephen McEntee
+Copyright © 2018-2021 Stephen McEntee
 Licensed under the MIT license. 
 See «vntree» LICENSE file for details https://github.com/qwilka/vntree/blob/master/LICENSE
 """
@@ -176,17 +176,24 @@ class Node:
         yield self 
 
 
-    def add_child(self, node):
+    def add_child(self, node, *, idx=None):
         """Add a child node to the current node instance.
 
         :param node: the child node instance.
         :type node: Node
+        :param idx: positional index for inserting node in self.childs
+        :type idx: int
         :returns: The new child node instance.   
         :rtype: Node 
         """
         if not issubclass(node.__class__, Node):
             raise TypeError("{}.add_child: arg «node»=«{}», type {} not valid.".format(self.__class__.__name__, node, type(node)))
-        self.childs.append(node)
+        if idx is None:
+            self.childs.append(node)
+        elif isinstance(idx, int) and idx < len(self.childs):
+            self.childs.insert(idx, node)
+        else:
+            raise ValueError("{}.add_child: cannot add node «{}», argument «idx»={} not correctly specified.".format(self.__class__.__name__, node.name, idx))
         node.parent = self
         return node    
 

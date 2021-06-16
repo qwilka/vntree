@@ -6,13 +6,14 @@ logger = logging.getLogger(__name__)
 
 __version__ = "0.4.0"
 __license__ = "MIT"
-__copyright__ = "Copyright 2018-2020 Stephen McEntee"
+__copyright__ = "Copyright 2018-2021 Stephen McEntee"
 __author__ = "Stephen McEntee"
 __email__ = "stephenmce@gmail.com"
 __description__ = """«vntree» is a simple tree data structure in Python."""
 __url__ = "https://github.com/qwilka/vntree"
 
 from .node import Node, NodeAttr, TreeAttr  # , _empty
+from .embed import EmbedNode
 
 
 try:
