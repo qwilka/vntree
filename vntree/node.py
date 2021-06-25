@@ -121,13 +121,13 @@ class Node:
     :type treedict: dict or None
     """
     YAML_setup = False
-    name = NodeAttr()
-    _nodeid = NodeAttr("_vntree")
+    name = NodeAttr("_vntree")
+    _id = NodeAttr("_vntree")
     _vntree_fpath = TreeAttr("_vntree")
 
 
     def __init__(self, name=None, parent=None, data=None, 
-                treedict=None, fpath=None, nodeid=None):
+                treedict=None, fpath=None, _id=None):
         if data and isinstance(data, dict):
             #self.data = collections.defaultdict(dict, copy.deepcopy(data))
             self.data = copy.deepcopy(data)
@@ -153,11 +153,15 @@ class Node:
             self.from_treedict(treedict)
         if fpath and isinstance(fpath, str):
             self._vntree_fpath = fpath
-        if self._nodeid is None:
-            if nodeid is None:
-                self._nodeid = uuid.uuid4().hex
-            else:
-                self._nodeid = nodeid
+        # if self._id is None:
+        #     if _id is None:
+        #         self._id = str(uuid.uuid4())
+        #     else:
+        #         self._id = _id
+        if _id:
+            self._id = _id
+        elif self._id is None:
+            self._id = str(uuid.uuid4())
 
 
     def __str__(self):
@@ -176,7 +180,7 @@ class Node:
         yield self 
 
 
-    def add_child(self, node, *, idx=None):
+    def add_child(self, node, *, idx=None, check_id=False):
         """Add a child node to the current node instance.
 
         :param node: the child node instance.
@@ -188,6 +192,13 @@ class Node:
         """
         if not issubclass(node.__class__, Node):
             raise TypeError("{}.add_child: arg «node»=«{}», type {} not valid.".format(self.__class__.__name__, node, type(node)))
+        if check_id:
+            for _n in node:
+                _dup = self._root.get_node_by_id(_n._id)
+                if _dup:
+                    _new_id = str(uuid.uuid4())
+                    logger.warning("%s.add_child: node:«%s» duplicate _id «%s» identified, changing to «%s»." % (self.__class__.__name__, _n.name, _n._id, _new_id))
+                    _n._id = _new_id
         if idx is None:
             self.childs.append(node)
         elif isinstance(idx, int) and idx < len(self.childs):
@@ -197,13 +208,31 @@ class Node:
         node.parent = self
         return node    
 
-    def copy(self):
+
+    # def add_tree(self, tree, *, idx=None):
+    #     for _n in tree:
+    #         _dup = self._root.get_node_by_id(_n._id)
+    #         if _dup:
+    #             _new_id = str(uuid.uuid4())
+    #             logger.warning("%s.add_tree: node:«%s» duplicate _id «%s» identified, changing to «%s»." % (self.__class__.__name__, _n.name, _n._id, _new_id))
+    #             _n._id = _new_id
+    #     self.add_child(tree, idx=idx)
+
+
+    def clone(self, change_id=False):
         """Return a deep copy of the sub-tree rooted at this node instance.
 
+        :param change_id:  if `True` set new _id for all nodes in the new tree.
+        :type change_id: bool
         :returns: Copy of the sub-tree rooted at this node instance.
         :rtype: Node 
         """
-        return copy.deepcopy(self)
+        _newtree = copy.deepcopy(self)
+        if change_id:
+            for _n in _newtree:
+                _n._id = str(uuid.uuid4())
+        return _newtree
+
 
     def remove_child(self, idx=None, *, name=None, node=None):
         """Remove a child node from the current node instance.
@@ -386,9 +415,9 @@ class Node:
         return _childnode
 
 
-    def get_node_by_id(self, nodeid):
+    def get_node_by_id(self, _id):
         for _n in self:
-            if _n._nodeid == nodeid:
+            if _n._id == _id:
                 return _n
         
 
@@ -560,15 +589,20 @@ class Node:
             _text += "\n"
         return _text
 
+
     def show(self):
         """Print out a text representation of the tree using to_texttree().
         """
         print(self.to_texttree())
 
+
     def from_treedict(self, treedict):
         if "data" in treedict:
             #self.data = collections.defaultdict(dict, treedict["data"])
-            self.data = copy.deepcopy(treedict["data"])
+            _nodedata = copy.deepcopy(treedict["data"])
+            # if new_id and "_id" in _nodedata["_vntree"]:
+            #     _nodedata["_vntree"].pop("_id")
+            self.data = _nodedata
         for key, val in treedict.items():
             if key in ["parent", "childs", "data"]:
                 continue
@@ -579,14 +613,17 @@ class Node:
                 self.__class__(parent=self, treedict=_childdict)
 
 
-    def to_treedict(self, recursive=True, treemeta=False, dataonly=False):
+    def to_treedict(self, recursive=True, treemeta=True, dataonly=False):
         # NOTE: replace vars(self) with self.__dict__ ( and self.__class__.__dict__ ?)
         if dataonly:
             _dct = {"data": copy.deepcopy(self.data)}
         else:
             _dct = {k:copy.deepcopy(v) for k, v in vars(self).items() if k not in ["parent", "childs"]}
-        if not treemeta and "_vntree" in _dct["data"]:
-            _dct["data"].pop("_vntree")
+        if "_vntree" in _dct["data"]:
+            if not treemeta:
+                _dct["data"].pop("_vntree")
+            # elif not _id:
+            #     _dct["data"]["_vntree"].pop("_id")
         if recursive and self.childs:
             _dct["childs"] = []
             for _child in self.childs:
@@ -594,7 +631,7 @@ class Node:
         return _dct 
 
 
-    def to_json(self, filepath=None, default=None, treemeta=False, dataonly=False, cls=None):
+    def to_JSON(self, filepath=None, treemeta=True, dataonly=False, cls=None, default=None):
         _treedict = self.to_treedict(treemeta=treemeta, dataonly=dataonly)
         if filepath is None:
             #return json.dumps(_treedict, default=default, cls=VntreeEncoder)
@@ -607,7 +644,7 @@ class Node:
 
 
     @classmethod
-    def from_json(cls, filepath, object_hook=None):
+    def from_JSON(cls, filepath, object_hook=None):
         err = ""
         _treedict = None
         if isinstance(filepath, str) and os.path.isfile(filepath):

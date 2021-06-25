@@ -9,7 +9,7 @@ from vntree import Node
 #ch = logging.StreamHandler()
 #logger.addHandler(ch)
 
-description = """A simple tree data structure based on vntree.Node class."""
+description = """Examples of cloning/copying trees."""
 
 
 aparser = argparse.ArgumentParser(description=description)
@@ -50,6 +50,28 @@ if args.case == "world":
     samerica = Node('South America', rootnode)
     Node('Chile', samerica, {"capital":"Santiago","population":17574003})
 
-                    
 
-print("\n", rootnode.to_texttree())
+print("\nOriginal tree «rootnode»")
+rootnode.show()
+
+
+# copy tree via JSON
+print("\nCreate «newtree» using Node.from_JSON \n")
+Jstr = rootnode.to_JSON()
+newtree = Node.from_JSON(Jstr)
+newtree.show()
+print(f"\nrootnode._id = {rootnode._id}\nnewtree._id  = {newtree._id}")
+
+# clone tree using «clone» method
+print("\nCreate «newtree» using the «self.clone» method \n")
+del newtree
+newtree = rootnode.clone()
+newtree.show()
+print(f"\nrootnode._id = {rootnode._id}\nnewtree._id  = {newtree._id}")
+
+# clone tree using «clone» method and change _ids
+print("\nCreate «newtree» with new _ids using «self.clone(change_id=True)»\n")
+del newtree
+newtree = rootnode.clone(change_id=True)
+newtree.show()
+print(f"\nrootnode._id = {rootnode._id}\nnewtree._id  = {newtree._id}")
