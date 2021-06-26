@@ -126,7 +126,7 @@ class Node:
     _vntree_fpath = TreeAttr("_vntree")
 
 
-    def __init__(self, name=None, parent=None, data=None, 
+    def __init__(self, name="", parent=None, data=None, 
                 treedict=None, fpath=None, _id=None):
         if data and isinstance(data, dict):
             #self.data = collections.defaultdict(dict, copy.deepcopy(data))
@@ -624,8 +624,9 @@ class Node:
                 _dct["data"].pop("_vntree")
             # elif not _id:
             #     _dct["data"]["_vntree"].pop("_id")
+        _dct["childs"] = []
         if recursive and self.childs:
-            _dct["childs"] = []
+            #_dct["childs"] = []
             for _child in self.childs:
                 _dct["childs"].append( _child.to_treedict(recursive=recursive, treemeta=treemeta, dataonly=dataonly) )
         return _dct 

@@ -32,7 +32,7 @@ if args.case == "basic":
     grandchild3 = Node(parent=child3, name="grand-child3")
     ggrandchild = Node("great-grandchild", grandchild3)
     Node("great-great-grandchild", ggrandchild)
-    Node(None, grandchild3, {"name":"name-in-data"})
+    Node(None, grandchild3, {"_vntree":{"name":"name-in-data"}})
 
 
 if args.case == "world":
