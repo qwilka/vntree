@@ -8,7 +8,7 @@ aparser = argparse.ArgumentParser()
 aparser.add_argument("case", help="select example case", 
     nargs='?', default="basic1",
     choices=["basic1", "basic2", "world", "treedict", "JSON", "YAML",
-    "top-down", "bottom-up"])
+    "top-down", "bottom-up", "txttree"])
 aparser.add_argument("--logging", help="select logging level", 
     default="ERROR",
     choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
@@ -210,3 +210,36 @@ elif args.case == "bottom-up":
     for ii, n in enumerate(reversed(rootnode)):
         print(f"node{ii} name=«{n.name}» coord={n._coord} level={n._level}")
 
+
+elif args.case == "txttree":
+    txttree = ''',The World,population=7762609412
+    The World,Europe
+    Europe,Belgium,capital=Brussels,population=11515793,HDI=0.919
+    Europe,Greece,capital=Athens,population=10768477,HDI=0.888
+    Europe,Scandinavia
+    Europe,Spain,capital=Madrid,population=46733038,HDI=0.904
+    Scandinavia,Denmark,capital=Copenhagen,population=5822763,HDI=0.940
+    The World,South America
+    South America,Chile,capital=Santiago,population=17574003,HDI=0.851
+    Denmark,Faroe Islands,population=52110
+    '''
+    rootnode = Node.txt2tree(txttree)
+    print(rootnode.to_texttree())
+
+
+
+
+    # rootnode = Node('The World', data={"population":7762609412}) 
+    # europe = Node('Europe', rootnode)
+    # Node('Belgium', europe, {"capital":"Brussels","population":11515793})
+    # europe.add_child( Node('Greece', data={"capital":"Athens","population":10768477}) )
+    # scandinavia = Node('Scandinavia', europe)
+    # europe.add_child( Node('Spain', data={"capital":"Madrid","population":46733038}) )
+    # denmark = Node('Denmark', scandinavia, {"capital":"Copenhagen","population":5822763})
+    # scandinavia.add_child( Node('Sweden', data={"capital":"Stockholm","population":10302984}) )
+    # Node('Norway', scandinavia, {"capital":"Oslo","population":5421241})
+    # Node('Faroe Islands', denmark)
+    # denmark.add_child( Node("Greenland") )
+    # samerica = Node('South America', rootnode)
+    # Node('Chile', samerica, {"capital":"Santiago","population":17574003})
+    # print(rootnode.to_texttree())

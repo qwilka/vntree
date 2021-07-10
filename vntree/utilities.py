@@ -28,3 +28,30 @@ def dict2hash2(obj):
     _hash = m.hexdigest()
     return _hash
 
+
+
+def is_int(s):
+    try:
+        num = int(s)
+        return num
+    except ValueError:
+        return False
+
+
+def is_float(s):
+    if is_int(s) is not False:
+        return False
+    try:
+        num = float(s)
+        return num
+    except ValueError:
+        return False
+
+
+def get_numeric(s):
+    _num = is_int(s)
+    if _num is False:
+        _num = is_float(s)
+    return _num
+
+
