@@ -212,7 +212,8 @@ elif args.case == "bottom-up":
 
 
 elif args.case == "txttree":
-    txttree = ''',The World,population=7762609412
+    txttree = '''
+    ,The World,population=7762609412
     The World,Europe
     Europe,Belgium,capital=Brussels,population=11515793,HDI=0.919
     Europe,Greece,capital=Athens,population=10768477,HDI=0.888

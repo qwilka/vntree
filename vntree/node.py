@@ -841,28 +841,42 @@ class Node:
     @classmethod
     def txt2tree(cls, txttree):
         """Build a tree from comma-separated lines of text.
-        A comma-separated line of text defines a node, as follows:
+
+        Each comma-separated line of text defines a node, as follows:
         parent-name, node-name, var1="data variable 1", var2=22
 
-        For example:
-        txttree = ''',The World,population=7762609412
+        The root node is defined first, with an empty «parent-name» field.
+        For sub-nodes, the parent node must already be defined.
+
+        Example:
+
+        txttree = '''
+        ,The World,population=7762609412
         The World,Europe
         Europe,Belgium,capital=Brussels,population=11515793
-        Europe,Greece,capital=Athens,population=10768477
+        The World,South America
+        South America,Chile,capital=Santiago,HDI=0.851
+        Europe,Greece,population=10768477
         '''
+
+        rootnode = Node.txt2tree(txttree)
+        print(rootnode.to_texttree())
+
+        | The World
+        +--| Europe
+        .  +--| Belgium
+        .  .  | Greece
+        .  | South America
+        .  +--| Chile
         """
         _rootnode = None
-        for ii, _line in enumerate(txttree.splitlines()):
-            #print(_line)
+        for _line in txttree.splitlines():
             if "," not in _line: continue
             _parname, _name, *_dlist  = _line.split(",")
             _parname = _parname.strip()
             _name = _name.strip()
-            # if _dlist[0] in ["Node"]:
-            #     _clsname = _dlist.pop(0)
             _data = {}
             for _field in _dlist:
-                #print("_field=", _field)
                 k,v = _field.split("=")
                 _num = get_numeric(v)
                 if _num is not False:
@@ -870,15 +884,12 @@ class Node:
                 _data[k.strip()] = v
             if _rootnode:
                 if _parname:
-                    #_par = _rootnode.find_one_node("_vntree", "name", value=_parname)
                     _par = _rootnode.find_one_node_by_name(_parname)
-                    #print(_line, _parname, _par)
                     _n = cls(_name, _par, data=_data)
                 else:
                     logger.error("%s.txt2tree: invalid txttree (only 1 root permitted)  %s" % (cls.__name__, _line))
             else:
                 _rootnode = cls(_name, None, data=_data)
-            #print(_parname, _name, _data)
         return _rootnode
 
 
