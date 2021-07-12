@@ -14,6 +14,7 @@ __url__ = "https://github.com/qwilka/vntree"
 
 from .node import Node, NodeAttr, TreeAttr  # , _empty
 from .embed import EmbedNode
+from . import utilities
 
 
 try:

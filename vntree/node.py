@@ -193,21 +193,27 @@ class Node:
         """
         if not issubclass(node.__class__, Node):
             raise TypeError("{}.add_child: arg «node»=«{}», type {} not valid.".format(self.__class__.__name__, node, type(node)))
+        _newnode = None
         if check_id:
             for _n in node:
                 _dup = self._root.get_node_by_id(_n._id)
                 if _dup:
-                    _new_id = str(uuid.uuid4())
-                    logger.warning("%s.add_child: node:«%s» duplicate _id «%s» identified, changing to «%s»." % (self.__class__.__name__, _n.name, _n._id, _new_id))
-                    _n._id = _new_id
+                    logger.warning("%s.add_child: instance:«%s», duplicate _id in tree, re-assigning _id of new child node «%s»." % (self.__class__.__name__, self.name, node.name))
+                    break
+            if _dup:
+                _newnode = node.clone()
+                for _n in _newnode:
+                    _n._id = str(uuid.uuid4())
+        if _newnode is None:
+            _newnode = node
         if idx is None:
-            self.childs.append(node)
+            self.childs.append(_newnode)
         elif isinstance(idx, int) and idx < len(self.childs):
-            self.childs.insert(idx, node)
+            self.childs.insert(idx, _newnode)
         else:
-            raise ValueError("{}.add_child: cannot add node «{}», argument «idx»={} not correctly specified.".format(self.__class__.__name__, node.name, idx))
-        node.parent = self
-        return node    
+            raise ValueError("{}.add_child: cannot add node «{}», argument «idx»={} not correctly specified.".format(self.__class__.__name__, _newnode.name, idx))
+        _newnode.parent = self
+        return _newnode    
 
 
     # def add_tree(self, tree, *, idx=None):
