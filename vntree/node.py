@@ -165,7 +165,7 @@ class Node:
             self._id = str(uuid.uuid4())
 
 
-    def __str__(self):
+    def __repr__(self):
         return "{} «{}» coord={}".format(self.__class__.__name__, self.name, self._coord)
 
 
@@ -179,6 +179,12 @@ class Node:
         for node in itertools.chain(*map(reversed, reversed(self.childs))):
             yield node
         yield self 
+
+
+    def __len__(self):
+        """ len(node) is the number of nodes in the sub-tree with root «node».
+        """
+        return sum([1 for n in self])
 
 
     def add_child(self, node, *, idx=None, check_id=False):
