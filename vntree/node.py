@@ -905,7 +905,7 @@ class Node:
         return _rootnode
 
 
-    def to_mermaid(self, orientation="LR"):
+    def to_mermaid(self, attribute="name", text="", orientation="LR"):
         """
         Ref:
         https://mermaid-js.github.io/mermaid/#/flowchart
@@ -919,8 +919,18 @@ class Node:
             #mm += (" "*4)*level + "|---{}\n".format(node.name)
             if _n.parent:
                 level = _n._level - local_root_level
+                partxt = str( getattr(_n.parent, attribute, "") ) + text
+                selftxt = str( getattr(_n, attribute, "") ) + text
+                # if partxt:
+                #     partxt = "".join([x for x in partxt if x not in '[]{}()'])
+                partxt = f'"{getattr(_n.parent, attribute, "")}{text}"'   
+                if not partxt: partxt = " "
+                # if selftxt:
+                #     selftxt = "".join([x for x in selftxt if x not in '[]{}()'])
+                selftxt = f'"{getattr(_n, attribute, "")}{text}"'
+                if not selftxt: selftxt = " "
                 #parentname = _n.parent.name if _n.parent
-                mm += f"    {_n.parent._id}[{_n.parent.name}] --> {_n._id}[{_n.name}]\n"
+                mm += f"    {_n.parent._id}[{partxt}] --> {_n._id}[{selftxt}]\n"
         return mm
 
 
