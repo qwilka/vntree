@@ -905,6 +905,24 @@ class Node:
         return _rootnode
 
 
+    def to_mermaid(self, orientation="LR"):
+        """
+        Ref:
+        https://mermaid-js.github.io/mermaid/#/flowchart
+        """
+        assert orientation in ["TB", "TD", "BT", "RL", "LR"], "Node.to_mermaid: «orientation» not specified correctly"
+        mm = f"flowchart {orientation}\n" 
+        #root_level = len(self.get_ancestors())
+        local_root_level = self._level 
+        for _n in self: 
+            #level = len(node.get_ancestors()) - root_level
+            #mm += (" "*4)*level + "|---{}\n".format(node.name)
+            if _n.parent:
+                level = _n._level - local_root_level
+                #parentname = _n.parent.name if _n.parent
+                mm += f"    {_n.parent._id}[{_n.parent.name}] --> {_n._id}[{_n.name}]\n"
+        return mm
+
 
 if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
