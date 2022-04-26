@@ -1,5 +1,5 @@
 """
-Copyright © 2018-2021 Stephen McEntee
+Copyright © 2018-2022 Stephen McEntee
 Licensed under the MIT license. 
 See «vntree» LICENSE file for details https://github.com/qwilka/vntree/blob/master/LICENSE
 """
@@ -12,6 +12,8 @@ import logging
 import os
 import pathlib 
 import pickle
+import re
+from string import Template
 import textwrap
 #from typing_extensions import Concatenate
 import uuid
@@ -905,10 +907,15 @@ class Node:
         return _rootnode
 
 
-    def to_mermaid(self, attribute="name", text="", orientation="LR"):
+    #def to_mermaid(self, attribute="name", text="", orientation="LR"):
+    def to_mermaid(self, template="${name}", orientation="LR"):
         """
+        example:
+        print(rootnode.to_mermaid("${name} coord=${_coord} level=${_level}"))
+        NOTE: use braces for template identifiers....
         Ref:
         https://mermaid-js.github.io/mermaid/#/flowchart
+        https://docs.python.org/3/library/string.html#template-strings
         """
         assert orientation in ["TB", "TD", "BT", "RL", "LR"], "Node.to_mermaid: «orientation» not specified correctly"
         mm = f"flowchart {orientation}\n" 
@@ -919,18 +926,43 @@ class Node:
             #mm += (" "*4)*level + "|---{}\n".format(node.name)
             if _n.parent:
                 level = _n._level - local_root_level
-                partxt = str( getattr(_n.parent, attribute, "") ) + text
-                selftxt = str( getattr(_n, attribute, "") ) + text
-                # if partxt:
-                #     partxt = "".join([x for x in partxt if x not in '[]{}()'])
-                partxt = f'"{getattr(_n.parent, attribute, "")}{text}"'   
+                ### consider this for getting object attributes:
+                ### [x for x in rootnode.__dir__() if not callable(getattr(rootnode,x))]
+                # partxt = str( getattr(_n.parent, attribute, "") ) + text
+                # selftxt = str( getattr(_n, attribute, "") ) + text
+                # # if partxt:
+                # #     partxt = "".join([x for x in partxt if x not in '[]{}()'])
+                # partxt = f'"{getattr(_n.parent, attribute, "")}{text}"'   
+                
+                # # if selftxt:
+                # #     selftxt = "".join([x for x in selftxt if x not in '[]{}()'])
+                # selftxt = f'"{getattr(_n, attribute, "")}{text}"'
+                
+                # #parentname = _n.parent.name if _n.parent
+                s = Template(template)
+                p = re.compile('\$\{([a-zA-Z_]\w*)\}')
+                matches = p.findall(template)
+                mapping={}
+                for _attr in matches:
+                    if hasattr(_n, _attr):
+                        mapping[_attr] = getattr(_n, _attr)
+                    else:
+                        _attrval = _n.get_data(_attr)
+                        mapping[_attr] = _attrval if _attrval else ""
+                selftxt = s.substitute(mapping)
+                mapping={}
+                for _attr in matches:
+                    if hasattr(_n.parent, _attr):
+                        mapping[_attr] = getattr(_n.parent, _attr)
+                    else:
+                        _attrval = _n.parent.get_data(_attr)
+                        mapping[_attr] = _attrval if _attrval else ""
+                partxt = s.substitute(mapping)
+
+
                 if not partxt: partxt = " "
-                # if selftxt:
-                #     selftxt = "".join([x for x in selftxt if x not in '[]{}()'])
-                selftxt = f'"{getattr(_n, attribute, "")}{text}"'
                 if not selftxt: selftxt = " "
-                #parentname = _n.parent.name if _n.parent
-                mm += f"    {_n.parent._id}[{partxt}] --> {_n._id}[{selftxt}]\n"
+                mm += f'    {_n.parent._id}["{partxt}"] --> {_n._id}["{selftxt}"]\n'
         return mm
 
 
