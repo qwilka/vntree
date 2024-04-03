@@ -3,6 +3,9 @@
 tree library
 ============
 https://jtree.treenotation.org/
+https://github.com/mar10/nutree Python library for tree data structures with an intuitive, yet powerful API
+
+
 
 comma-separated tree
 ====================
@@ -60,6 +63,8 @@ https://github.com/aaronj1335/t-js
 http://jnuno.com/tree-model-js/
 https://stackoverflow.com/questions/12831746/javascript-building-a-hierarchical-tree/58136016#58136016
 https://github.com/youngthejames/jupyterlab_filetree
+https://github.com/mar10/wunderbaum
+https://github.com/mar10/fancytree
 
 
 

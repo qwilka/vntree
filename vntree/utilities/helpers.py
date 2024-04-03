@@ -29,10 +29,11 @@ def dict2hash2(obj):
     return _hash
 
 
-
+### https://www.w3schools.com/python/ref_string_isnumeric.asp
 def is_int(s):
     try:
-        num = int(s)
+        # num = int(s) ###
+        num = int(s) if s.isnumeric() else False
         return num
     except ValueError:
         return False
